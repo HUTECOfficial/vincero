@@ -1,0 +1,24 @@
+# robots.txt para VINCERO
+# Permitir indexación completa del sitio
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://vincero.com.mx/sitemap.xml
+
+# Bloquear archivos innecesarios
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Permitir crawling de imágenes
+User-agent: Googlebot-Image
+Allow: /
+
+# Optimización para bots de búsqueda
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
