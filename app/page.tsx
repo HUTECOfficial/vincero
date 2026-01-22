@@ -125,6 +125,9 @@ export default function HomePage() {
   const [showHeaderLogo, setShowHeaderLogo] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [slideProgress, setSlideProgress] = useState(0)
+  const [showIntroVideo, setShowIntroVideo] = useState(true)
+  const [introVideoEnded, setIntroVideoEnded] = useState(false)
+  const introVideoRef = useRef<HTMLVideoElement>(null)
   const heroImagesDesktop = [
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportadahorizontal.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2horizontal.png',
@@ -535,9 +538,51 @@ export default function HomePage() {
     }
   }, [user])
 
+  // Pre-set carousel to third slide immediately when API is ready
+  useEffect(() => {
+    if (heroApi) {
+      heroApi.scrollTo(2, true) // true = instant, no animation
+    }
+  }, [heroApi])
+
+  // Intro video handler - only for desktop
+  useEffect(() => {
+    const isDesktop = window.innerWidth >= 768
+    
+    if (!isDesktop) {
+      setShowIntroVideo(false)
+      setIntroVideoEnded(true)
+      return
+    }
+
+    const video = introVideoRef.current
+    if (!video) return
+
+    const handleVideoEnd = () => {
+      setIntroVideoEnded(true)
+      setTimeout(() => {
+        setShowIntroVideo(false)
+      }, 300)
+    }
+
+    video.addEventListener('ended', handleVideoEnd)
+    
+    // Auto-play video
+    video.play().catch(err => {
+      console.log('Video autoplay failed:', err)
+      // If autoplay fails, skip video
+      setShowIntroVideo(false)
+      setIntroVideoEnded(true)
+    })
+
+    return () => {
+      video.removeEventListener('ended', handleVideoEnd)
+    }
+  }, [])
+
   // Hero carousel autoplay with progress bar
   useEffect(() => {
-    if (!heroApi) return
+    if (!heroApi || showIntroVideo) return
 
     const slideDuration = 6000 // 6 seconds per slide
     const progressInterval = 50 // Update progress every 50ms
@@ -563,7 +608,7 @@ export default function HomePage() {
     return () => {
       clearInterval(interval)
     }
-  }, [heroApi])
+  }, [heroApi, showIntroVideo])
 
   // Show/hide header logo based on scroll position
   useEffect(() => {
@@ -893,6 +938,38 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      
+      {/* Intro Video Overlay - Desktop Only */}
+      {showIntroVideo && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: '#000',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          opacity: introVideoEnded ? 0 : 1,
+          transition: 'opacity 0.5s ease-out'
+        }}>
+          <video
+            ref={introVideoRef}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+            playsInline
+            muted
+            preload="auto"
+          >
+            <source src="https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_193233_d709af2e-e871-41f2-ba47-7cb4d1fa2880.mp4" type="video/mp4" />
+          </video>
+        </div>
+      )}
       
       <div className="min-h-screen bg-background relative">
         {/* Christmas Effects */}
