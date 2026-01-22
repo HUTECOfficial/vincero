@@ -9,7 +9,7 @@ import { useLanguage } from '@/lib/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuth } from '@/lib/AuthContext'
 import { ChristmasEffects } from '@/components/ChristmasEffects'
-import { createOrder, getUserOrders } from '@/lib/supabase'
+import { createOrder, getUserOrders, supabase } from '@/lib/supabase'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { trackEvent, trackProductView } from '@/lib/analytics'
 
@@ -112,7 +112,7 @@ export default function HomePage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   
   // Auth states
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
+  const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login')
   const [authEmail, setAuthEmail] = useState('')
   const [authPassword, setAuthPassword] = useState('')
   const [authConfirmPassword, setAuthConfirmPassword] = useState('')
@@ -121,6 +121,7 @@ export default function HomePage() {
   const [showPassword, setShowPassword] = useState(false)
   const [authError, setAuthError] = useState('')
   const [authSuccess, setAuthSuccess] = useState('')
+  const [resetEmail, setResetEmail] = useState('')
   const [userOrders, setUserOrders] = useState<any[]>([])
   const [loadingOrders, setLoadingOrders] = useState(false)
   const [heroApi, setHeroApi] = useState<CarouselApi>()
@@ -502,6 +503,30 @@ export default function HomePage() {
       setAuthPhone('')
     } catch (error: any) {
       setAuthError(error.message || 'Error de autenticación')
+    }
+  }
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAuthError('')
+    setAuthSuccess('')
+    
+    if (!resetEmail.trim()) {
+      setAuthError('Por favor ingresa tu email')
+      return
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      })
+      
+      if (error) throw error
+      
+      setAuthSuccess('Te hemos enviado un email con instrucciones para recuperar tu contraseña')
+      setResetEmail('')
+    } catch (error: any) {
+      setAuthError(error.message || 'Error al enviar el email de recuperación')
     }
   }
 
@@ -1888,14 +1913,14 @@ export default function HomePage() {
                       <User className="w-12 h-12 text-primary" />
                     </div>
                     <h3 className="text-2xl font-bold mb-1">
-                      {authMode === 'login' ? t.welcomeBack : t.joinUs}
+                      {authMode === 'login' ? t.welcomeBack : authMode === 'register' ? t.joinUs : 'Recuperar Contraseña'}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                      {authMode === 'login' ? t.loginToContinue : t.createAccount}
+                      {authMode === 'login' ? t.loginToContinue : authMode === 'register' ? t.createAccount : 'Ingresa tu email para recuperar tu contraseña'}
                     </p>
                   </div>
 
-                  <form onSubmit={handleAuth} className="space-y-4 max-w-md mx-auto">
+                  <form onSubmit={authMode === 'forgot' ? handlePasswordReset : handleAuth} className="space-y-4 max-w-md mx-auto">
                     {authError && (
                       <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
                         {authError}
@@ -1938,34 +1963,51 @@ export default function HomePage() {
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                           type="email"
-                          value={authEmail}
-                          onChange={(e) => setAuthEmail(e.target.value)}
+                          value={authMode === 'forgot' ? resetEmail : authEmail}
+                          onChange={(e) => authMode === 'forgot' ? setResetEmail(e.target.value) : setAuthEmail(e.target.value)}
                           className="w-full pl-10 pr-4 py-3 border-2 border-border rounded-lg focus:border-primary outline-none transition-colors"
                           required
                         />
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium mb-2">{t.password}</label>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          value={authPassword}
-                          onChange={(e) => setAuthPassword(e.target.value)}
-                          className="w-full pl-10 pr-12 py-3 border-2 border-border rounded-lg focus:border-primary outline-none transition-colors"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                        >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
+                    {authMode !== 'forgot' && (
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="block text-sm font-medium">{t.password}</label>
+                          {authMode === 'login' && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAuthMode('forgot')
+                                setAuthError('')
+                                setAuthSuccess('')
+                              }}
+                              className="text-xs text-primary hover:underline"
+                            >
+                              ¿Olvidaste tu contraseña?
+                            </button>
+                          )}
+                        </div>
+                        <div className="relative">
+                          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                          <input
+                            type={showPassword ? 'text' : 'password'}
+                            value={authPassword}
+                            onChange={(e) => setAuthPassword(e.target.value)}
+                            className="w-full pl-10 pr-12 py-3 border-2 border-border rounded-lg focus:border-primary outline-none transition-colors"
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          >
+                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {authMode === 'register' && (
                       <div>
@@ -1984,23 +2026,39 @@ export default function HomePage() {
                     )}
 
                     <Button type="submit" className="w-full py-5 text-base" size="lg">
-                      {authMode === 'login' ? t.login : t.register}
+                      {authMode === 'login' ? t.login : authMode === 'register' ? t.register : 'Enviar Email de Recuperación'}
                     </Button>
 
-                    <p className="text-center text-sm text-muted-foreground">
-                      {authMode === 'login' ? t.noAccount : t.hasAccount}{' '}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAuthMode(authMode === 'login' ? 'register' : 'login')
-                          setAuthError('')
-                          setAuthSuccess('')
-                        }}
-                        className="text-primary font-medium hover:underline"
-                      >
-                        {authMode === 'login' ? t.register : t.login}
-                      </button>
-                    </p>
+                    {authMode === 'forgot' ? (
+                      <p className="text-center text-sm text-muted-foreground">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuthMode('login')
+                            setAuthError('')
+                            setAuthSuccess('')
+                          }}
+                          className="text-primary font-medium hover:underline"
+                        >
+                          Volver al inicio de sesión
+                        </button>
+                      </p>
+                    ) : (
+                      <p className="text-center text-sm text-muted-foreground">
+                        {authMode === 'login' ? t.noAccount : t.hasAccount}{' '}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAuthMode(authMode === 'login' ? 'register' : 'login')
+                            setAuthError('')
+                            setAuthSuccess('')
+                          }}
+                          className="text-primary font-medium hover:underline"
+                        >
+                          {authMode === 'login' ? t.register : t.login}
+                        </button>
+                      </p>
+                    )}
                   </form>
                 </div>
               )}
