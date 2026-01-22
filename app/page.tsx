@@ -969,8 +969,13 @@ export default function HomePage() {
             ref={introVideoRef}
             className="hidden md:block"
             style={{
-              width: '100%',
-              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              minWidth: '100%',
+              minHeight: '100%',
               objectFit: 'cover'
             }}
             playsInline
@@ -984,8 +989,13 @@ export default function HomePage() {
             ref={introVideoMobileRef}
             className="md:hidden"
             style={{
-              width: '100%',
-              height: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              minWidth: '100%',
+              minHeight: '100%',
               objectFit: 'cover'
             }}
             playsInline
