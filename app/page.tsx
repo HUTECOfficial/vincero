@@ -130,7 +130,6 @@ export default function HomePage() {
   const [showIntroVideo, setShowIntroVideo] = useState(true)
   const [introVideoEnded, setIntroVideoEnded] = useState(false)
   const introVideoRef = useRef<HTMLVideoElement>(null)
-  const introVideoMobileRef = useRef<HTMLVideoElement>(null)
   const heroImagesDesktop = [
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportadahorizontal.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2horizontal.png',
@@ -576,10 +575,18 @@ export default function HomePage() {
     }
   }, [showIntroVideo])
 
-  // Intro video handler - for both desktop and mobile
+  // Intro video handler - only for desktop
   useEffect(() => {
     const isDesktop = window.innerWidth >= 768
-    const video = isDesktop ? introVideoRef.current : introVideoMobileRef.current
+    
+    // Skip video on mobile
+    if (!isDesktop) {
+      setShowIntroVideo(false)
+      setIntroVideoEnded(true)
+      return
+    }
+    
+    const video = introVideoRef.current
     if (!video) return
 
     const handleVideoEnd = () => {
@@ -1013,24 +1020,6 @@ export default function HomePage() {
             preload="auto"
           >
             <source src="https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_193233_d709af2e-e871-41f2-ba47-7cb4d1fa2880.mp4" type="video/mp4" />
-          </video>
-          {/* Mobile Video */}
-          <video
-            ref={introVideoMobileRef}
-            className="md:hidden"
-            style={{
-              position: 'absolute',
-              top: '0',
-              left: '0',
-              width: '100vw',
-              height: '100dvh',
-              objectFit: 'contain'
-            }}
-            playsInline
-            muted
-            preload="auto"
-          >
-            <source src="https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_203312_63a04753-3358-436e-bfef-cdaf36f92739.mp4" type="video/mp4" />
           </video>
         </div>
       )}
