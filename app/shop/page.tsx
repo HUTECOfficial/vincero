@@ -18,6 +18,7 @@ interface Product {
   nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName10' | 'productName11' | 'productName12' | 'productName13' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18'
   price: number
   image: string
+  images?: string[]
   badgeKey?: 'mostPopular' | 'favorite' | 'limitedEdition' | 'classic' | 'newProduct' | 'trending' | 'popular' | 'exclusive' | 'winterCollection' | 'ballerina' | 'lightyear'
   descriptionType: 'normal' | 'high' | 'winter' | 'ballerina' | 'lightyear'
   rating: number
@@ -46,6 +47,7 @@ function ShopContent() {
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null)
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
   const [isStripeLoading, setIsStripeLoading] = useState(false)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
   const products: Product[] = [
     {
@@ -53,6 +55,14 @@ function ShopContent() {
       nameKey: 'productName1',
       price: 32500,
       image: '/1.png',
+      images: [
+        '/1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel4.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel5.png',
+      ],
       badgeKey: 'mostPopular',
       descriptionType: 'normal',
       rating: 4.9,
@@ -63,6 +73,13 @@ function ShopContent() {
       nameKey: 'productName2',
       price: 32500,
       image: '/2.png',
+      images: [
+        '/2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa3.png',
+      ],
       badgeKey: 'favorite',
       descriptionType: 'normal',
       rating: 5.0,
@@ -73,6 +90,13 @@ function ShopContent() {
       nameKey: 'productName3',
       price: 32500,
       image: '/3.png',
+      images: [
+        '/3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris4.png',
+      ],
       badgeKey: 'limitedEdition',
       descriptionType: 'normal',
       rating: 4.8,
@@ -83,6 +107,13 @@ function ShopContent() {
       nameKey: 'productName4',
       price: 32500,
       image: '/4.png',
+      images: [
+        '/4.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco4.png',
+      ],
       badgeKey: 'classic',
       descriptionType: 'normal',
       rating: 4.9,
@@ -93,6 +124,13 @@ function ShopContent() {
       nameKey: 'productName5',
       price: 32500,
       image: '/6.png?v=2',
+      images: [
+        '/6.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco3.png',
+      ],
       badgeKey: 'newProduct',
       descriptionType: 'high',
       rating: 5.0,
@@ -103,6 +141,13 @@ function ShopContent() {
       nameKey: 'productName6',
       price: 32500,
       image: '/7.png?v=2',
+      images: [
+        '/7.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe4.png',
+      ],
       badgeKey: 'trending',
       descriptionType: 'high',
       rating: 4.8,
@@ -113,6 +158,13 @@ function ShopContent() {
       nameKey: 'productName7',
       price: 32500,
       image: '/8.png?v=2',
+      images: [
+        '/8.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul4.png',
+      ],
       badgeKey: 'popular',
       descriptionType: 'high',
       rating: 4.9,
@@ -123,6 +175,13 @@ function ShopContent() {
       nameKey: 'productName8',
       price: 32500,
       image: '/9.png?v=2',
+      images: [
+        '/9.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro4.png',
+      ],
       badgeKey: 'exclusive',
       descriptionType: 'high',
       rating: 4.9,
@@ -133,6 +192,13 @@ function ShopContent() {
       nameKey: 'productName14',
       price: 32500,
       image: '/22.png',
+      images: [
+        '/22.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris3.png',
+      ],
       badgeKey: 'newProduct',
       descriptionType: 'high',
       rating: 4.9,
@@ -153,6 +219,13 @@ function ShopContent() {
       nameKey: 'productName10',
       price: 32500,
       image: '/19.png',
+      images: [
+        '/19.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%202.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%203.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%204.png',
+      ],
       badgeKey: 'ballerina',
       descriptionType: 'ballerina',
       rating: 4.9,
@@ -163,6 +236,13 @@ function ShopContent() {
       nameKey: 'productName11',
       price: 32500,
       image: '/18.png',
+      images: [
+        '/18.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagrisblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris4.png',
+      ],
       badgeKey: 'ballerina',
       descriptionType: 'ballerina',
       rating: 4.9,
@@ -173,6 +253,13 @@ function ShopContent() {
       nameKey: 'productName12',
       price: 32500,
       image: '/20.png',
+      images: [
+        '/20.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo4.png',
+      ],
       badgeKey: 'ballerina',
       descriptionType: 'ballerina',
       rating: 4.9,
@@ -183,6 +270,13 @@ function ShopContent() {
       nameKey: 'productName13',
       price: 32500,
       image: '/21.png',
+      images: [
+        '/21.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro3.png',
+      ],
       badgeKey: 'ballerina',
       descriptionType: 'ballerina',
       rating: 4.9,
@@ -193,6 +287,13 @@ function ShopContent() {
       nameKey: 'productName15',
       price: 32500,
       image: '/23.png',
+      images: [
+        '/23.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro4.png',
+      ],
       badgeKey: 'lightyear',
       descriptionType: 'lightyear',
       rating: 5.0,
@@ -203,6 +304,13 @@ function ShopContent() {
       nameKey: 'productName16',
       price: 32500,
       image: '/24.png',
+      images: [
+        '/24.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes2.png',
+      ],
       badgeKey: 'lightyear',
       descriptionType: 'lightyear',
       rating: 4.9,
@@ -213,6 +321,13 @@ function ShopContent() {
       nameKey: 'productName17',
       price: 32500,
       image: '/25.png',
+      images: [
+        '/25.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul4.png',
+      ],
       badgeKey: 'lightyear',
       descriptionType: 'lightyear',
       rating: 4.9,
@@ -223,6 +338,13 @@ function ShopContent() {
       nameKey: 'productName18',
       price: 32500,
       image: '/26.png',
+      images: [
+        '/26.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa4.png',
+      ],
       badgeKey: 'lightyear',
       descriptionType: 'lightyear',
       rating: 4.9,
@@ -299,6 +421,7 @@ function ShopContent() {
 
   const openProductDetail = (product: Product) => {
     setProductDetailView(product)
+    setSelectedImageIndex(0)
   }
 
   const confirmAddToCart = () => {
@@ -922,46 +1045,142 @@ function ShopContent() {
 
       {/* Product Detail Modal */}
       {productDetailView && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={() => setProductDetailView(null)}>
-          <Card className="w-full max-w-2xl my-8" onClick={(e) => e.stopPropagation()}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-              <div className="relative aspect-[4/3] rounded-lg overflow-hidden bg-gradient-to-br from-secondary/50 to-accent/20">
-                <img src={productDetailView.image} alt={getProductName(productDetailView)} className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-3xl font-bold">{getProductName(productDetailView)}</h2>
-                  <button onClick={() => setProductDetailView(null)} className="hover:bg-accent p-2 rounded">
-                    <X className="w-5 h-5" />
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-end md:items-center justify-center">
+          <Card className="w-full md:max-w-4xl max-h-[90vh] md:max-h-[85vh] overflow-hidden flex flex-col rounded-t-3xl md:rounded-xl">
+            <div className="p-4 md:p-6 border-b flex items-center justify-between">
+              <h2 className="text-xl md:text-2xl font-bold">{getProductName(productDetailView)}</h2>
+              <button onClick={() => setProductDetailView(null)} className="hover:bg-muted rounded-full p-2 transition-colors">
+                <X className="w-5 h-5 md:w-6 md:h-6" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 md:p-6">
+              <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+                {/* Image Section */}
+                <div className="relative">
+                  <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-secondary/50 to-accent/20">
+                    {getProductBadge(productDetailView) && (
+                      <div className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
+                        {getProductBadge(productDetailView)}
+                      </div>
+                    )}
+                    <img
+                      src={productDetailView.images && productDetailView.images.length > 0 ? productDetailView.images[selectedImageIndex] : productDetailView.image}
+                      alt={getProductName(productDetailView)}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  {/* Image Gallery Thumbnails */}
+                  {productDetailView.images && productDetailView.images.length > 1 && (
+                    <div className="mt-4 grid grid-cols-4 gap-2">
+                      {productDetailView.images.map((img, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedImageIndex(index)}
+                          className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                            selectedImageIndex === index
+                              ? 'border-primary scale-95'
+                              : 'border-transparent hover:border-primary/50'
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`${getProductName(productDetailView)} - ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Details Section */}
+                <div className="flex flex-col">
+                  <div className="mb-4">
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2">{getProductName(productDetailView)}</h3>
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className={`w-5 h-5 ${
+                              i < Math.floor(productDetailView.rating) 
+                                ? 'fill-primary text-primary' 
+                                : 'text-muted-foreground'
+                            }`} 
+                          />
+                        ))}
+                      </div>
+                      <span className="text-lg font-medium">{productDetailView.rating}</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-2 flex-wrap">
+                      <span className="text-xl text-muted-foreground line-through">$649.00 MXN</span>
+                      <span className="text-3xl md:text-4xl font-bold text-gradient">${(productDetailView.price / 100).toFixed(2)} MXN</span>
+                      <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded">50% OFF</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="font-bold text-lg mb-2">{t.description}</h4>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {getProductDescription(productDetailView)}
+                    </p>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="font-bold text-lg mb-2">{t.details}</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between py-2 border-b">
+                        <span className="text-muted-foreground">{t.color}:</span>
+                        <span className="font-medium">{productDetailView.color}</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b">
+                        <span className="text-muted-foreground">{t.availableSizesLabel}:</span>
+                        <span className="font-medium">
+                          {productDetailView.descriptionType === 'high' 
+                            ? '17mx - 21mx' 
+                            : productDetailView.descriptionType === 'winter' 
+                            ? '13mx - 17mx' 
+                            : '13mx - 17mx'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b">
+                        <span className="text-muted-foreground">{t.material}:</span>
+                        <span className="font-medium">Textil / PVC</span>
+                      </div>
+                      <div className="flex justify-between py-2">
+                        <span className="text-muted-foreground">{t.warranty}:</span>
+                        <span className="font-medium">{t.warrantyValue}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setIsSizeGuideOpen(true)}
+                    className="flex items-center gap-2 text-sm text-primary hover:underline mb-4"
+                  >
+                    <Ruler className="w-4 h-4" />
+                    Guía de tallas
                   </button>
+
+                  <div className="mt-auto pt-4">
+                    <Button 
+                      onClick={() => {
+                        setProductDetailView(null)
+                        openSizeSelector(productDetailView)
+                      }}
+                      className="w-full py-6 text-lg"
+                      size="lg"
+                    >
+                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      {t.add}
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 mb-4">
-                  <Star className="w-5 h-5 fill-primary text-primary" />
-                  <span className="text-lg font-semibold">{productDetailView.rating}</span>
-                </div>
-                <div className="mb-4">
-                  <span className="text-xl text-muted-foreground line-through mr-2">$649.00</span>
-                  <span className="text-3xl font-bold text-primary">${(productDetailView.price / 100).toFixed(2)}</span>
-                  <span className="ml-2 text-sm font-bold text-green-600 bg-green-100 px-3 py-1 rounded">50% OFF</span>
-                </div>
-                <p className="text-muted-foreground mb-6">{getProductDescription(productDetailView)}</p>
-                <p className="text-sm text-muted-foreground mb-4">Color: {productDetailView.color}</p>
-                <button
-                  onClick={() => setIsSizeGuideOpen(true)}
-                  className="flex items-center gap-2 text-sm text-primary hover:underline mb-4"
-                >
-                  <Ruler className="w-4 h-4" />
-                  Guía de tallas
-                </button>
-                <Button 
-                  onClick={() => {
-                    setProductDetailView(null)
-                    openSizeSelector(productDetailView)
-                  }}
-                  className="w-full"
-                >
-                  {t.add}
-                </Button>
               </div>
             </div>
           </Card>

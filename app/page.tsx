@@ -16,6 +16,7 @@ interface Product {
   nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName10' | 'productName11' | 'productName12' | 'productName13' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18'
   price: number
   image: string
+  images?: string[]
   badgeKey?: 'mostPopular' | 'favorite' | 'limitedEdition' | 'classic' | 'newProduct' | 'trending' | 'popular' | 'exclusive' | 'winterCollection' | 'ballerina' | 'lightyear'
   descriptionType: 'normal' | 'high' | 'winter' | 'ballerina' | 'lightyear'
   rating: number
@@ -106,6 +107,7 @@ export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
   const [isStripeLoading, setIsStripeLoading] = useState(false)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   
   // Auth states
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login')
@@ -139,6 +141,14 @@ export default function HomePage() {
       nameKey: 'productName1',
       price: 32500,
       image: '/1.png',
+      images: [
+        '/1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel4.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel5.png',
+      ],
       badgeKey: 'mostPopular',
       descriptionType: 'normal',
       rating: 4.9,
@@ -149,6 +159,13 @@ export default function HomePage() {
       nameKey: 'productName2',
       price: 32500,
       image: '/2.png',
+      images: [
+        '/2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa3.png',
+      ],
       badgeKey: 'favorite',
       descriptionType: 'normal',
       rating: 5.0,
@@ -159,6 +176,13 @@ export default function HomePage() {
       nameKey: 'productName3',
       price: 32500,
       image: '/3.png',
+      images: [
+        '/3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris4.png',
+      ],
       badgeKey: 'limitedEdition',
       descriptionType: 'normal',
       rating: 4.8,
@@ -169,6 +193,13 @@ export default function HomePage() {
       nameKey: 'productName4',
       price: 32500,
       image: '/4.png',
+      images: [
+        '/4.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco4.png',
+      ],
       badgeKey: 'classic',
       descriptionType: 'normal',
       rating: 4.9,
@@ -179,6 +210,13 @@ export default function HomePage() {
       nameKey: 'productName5',
       price: 32500,
       image: '/6.png?v=2',
+      images: [
+        '/6.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco3.png',
+      ],
       badgeKey: 'newProduct',
       descriptionType: 'high',
       rating: 5.0,
@@ -189,6 +227,13 @@ export default function HomePage() {
       nameKey: 'productName6',
       price: 32500,
       image: '/7.png?v=2',
+      images: [
+        '/7.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe4.png',
+      ],
       badgeKey: 'trending',
       descriptionType: 'high',
       rating: 4.8,
@@ -199,6 +244,13 @@ export default function HomePage() {
       nameKey: 'productName7',
       price: 32500,
       image: '/8.png?v=2',
+      images: [
+        '/8.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul4.png',
+      ],
       badgeKey: 'popular',
       descriptionType: 'high',
       rating: 4.9,
@@ -209,6 +261,13 @@ export default function HomePage() {
       nameKey: 'productName8',
       price: 32500,
       image: '/9.png?v=2',
+      images: [
+        '/9.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro4.png',
+      ],
       badgeKey: 'exclusive',
       descriptionType: 'high',
       rating: 4.9,
@@ -219,6 +278,13 @@ export default function HomePage() {
       nameKey: 'productName14',
       price: 32500,
       image: '/22.png',
+      images: [
+        '/22.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris3.png',
+      ],
       badgeKey: 'newProduct',
       descriptionType: 'high',
       rating: 4.9,
@@ -239,6 +305,13 @@ export default function HomePage() {
       nameKey: 'productName10',
       price: 32500,
       image: '/19.png',
+      images: [
+        '/19.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%202.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%203.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%204.png',
+      ],
       badgeKey: 'ballerina',
       descriptionType: 'ballerina',
       rating: 4.9,
@@ -249,6 +322,13 @@ export default function HomePage() {
       nameKey: 'productName11',
       price: 32500,
       image: '/18.png',
+      images: [
+        '/18.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagrisblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris4.png',
+      ],
       badgeKey: 'ballerina',
       descriptionType: 'ballerina',
       rating: 4.9,
@@ -259,6 +339,13 @@ export default function HomePage() {
       nameKey: 'productName12',
       price: 32500,
       image: '/20.png',
+      images: [
+        '/20.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo4.png',
+      ],
       badgeKey: 'ballerina',
       descriptionType: 'ballerina',
       rating: 4.9,
@@ -269,6 +356,13 @@ export default function HomePage() {
       nameKey: 'productName13',
       price: 32500,
       image: '/21.png',
+      images: [
+        '/21.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro3.png',
+      ],
       badgeKey: 'ballerina',
       descriptionType: 'ballerina',
       rating: 4.9,
@@ -279,6 +373,13 @@ export default function HomePage() {
       nameKey: 'productName15',
       price: 32500,
       image: '/23.png',
+      images: [
+        '/23.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro4.png',
+      ],
       badgeKey: 'lightyear',
       descriptionType: 'lightyear',
       rating: 5.0,
@@ -289,6 +390,13 @@ export default function HomePage() {
       nameKey: 'productName16',
       price: 32500,
       image: '/24.png',
+      images: [
+        '/24.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes2.png',
+      ],
       badgeKey: 'lightyear',
       descriptionType: 'lightyear',
       rating: 4.9,
@@ -299,6 +407,13 @@ export default function HomePage() {
       nameKey: 'productName17',
       price: 32500,
       image: '/25.png',
+      images: [
+        '/25.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul4.png',
+      ],
       badgeKey: 'lightyear',
       descriptionType: 'lightyear',
       rating: 4.9,
@@ -309,6 +424,13 @@ export default function HomePage() {
       nameKey: 'productName18',
       price: 32500,
       image: '/26.png',
+      images: [
+        '/26.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa4.png',
+      ],
       badgeKey: 'lightyear',
       descriptionType: 'lightyear',
       rating: 4.9,
@@ -465,6 +587,7 @@ export default function HomePage() {
 
   const openProductDetail = (product: Product) => {
     setProductDetailView(product)
+    setSelectedImageIndex(0)
   }
 
   const openCollection = (collectionType: string) => {
@@ -1813,11 +1936,34 @@ export default function HomePage() {
                       </div>
                     )}
                     <img
-                      src={productDetailView.image || "/placeholder.svg"}
+                      src={productDetailView.images && productDetailView.images.length > 0 ? productDetailView.images[selectedImageIndex] : productDetailView.image || "/placeholder.svg"}
                       alt={getProductName(productDetailView)}
                       className="w-full h-full object-cover"
                     />
                   </div>
+                  
+                  {/* Image Gallery Thumbnails */}
+                  {productDetailView.images && productDetailView.images.length > 1 && (
+                    <div className="mt-4 grid grid-cols-4 gap-2">
+                      {productDetailView.images.map((img, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedImageIndex(index)}
+                          className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
+                            selectedImageIndex === index
+                              ? 'border-primary scale-95'
+                              : 'border-transparent hover:border-primary/50'
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`${getProductName(productDetailView)} - ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Details Section */}
