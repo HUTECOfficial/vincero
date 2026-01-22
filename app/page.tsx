@@ -980,12 +980,12 @@ export default function HomePage() {
       {showIntroVideo && (
         <div style={{
           position: 'fixed',
-          top: '-env(safe-area-inset-top, 0px)',
-          left: '-env(safe-area-inset-left, 0px)',
-          right: '-env(safe-area-inset-right, 0px)',
-          bottom: '-env(safe-area-inset-bottom, 0px)',
-          width: 'calc(100vw + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px))',
-          height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
+          top: '-50px',
+          left: '-50px',
+          right: '-50px',
+          bottom: '-50px',
+          width: 'calc(100vw + 100px)',
+          height: 'calc(100dvh + 100px)',
           backgroundColor: '#000',
           zIndex: 9999,
           overflow: 'hidden',
@@ -1023,10 +1023,10 @@ export default function HomePage() {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '100vw',
-              height: '100vh',
-              minWidth: '110%',
-              minHeight: '110%',
+              width: 'calc(100vw + 100px)',
+              height: 'calc(100dvh + 100px)',
+              minWidth: '120%',
+              minHeight: '120%',
               objectFit: 'cover'
             }}
             playsInline
