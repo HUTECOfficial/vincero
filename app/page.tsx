@@ -548,6 +548,34 @@ export default function HomePage() {
     }
   }, [heroApi])
 
+  // Lock body scroll while intro video is playing
+  useEffect(() => {
+    if (showIntroVideo) {
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+      document.body.style.height = '100%'
+      document.body.style.top = '0'
+      document.body.style.left = '0'
+    } else {
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+      document.body.style.height = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.width = ''
+      document.body.style.height = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+    }
+  }, [showIntroVideo])
+
   // Intro video handler - for both desktop and mobile
   useEffect(() => {
     const isDesktop = window.innerWidth >= 768
@@ -952,15 +980,16 @@ export default function HomePage() {
       {showIntroVideo && (
         <div style={{
           position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
+          top: '-env(safe-area-inset-top, 0px)',
+          left: '-env(safe-area-inset-left, 0px)',
+          right: '-env(safe-area-inset-right, 0px)',
+          bottom: '-env(safe-area-inset-bottom, 0px)',
+          width: 'calc(100vw + env(safe-area-inset-left, 0px) + env(safe-area-inset-right, 0px))',
+          height: 'calc(100vh + env(safe-area-inset-top, 0px) + env(safe-area-inset-bottom, 0px))',
           backgroundColor: '#000',
           zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          overflow: 'hidden',
+          touchAction: 'none',
           opacity: introVideoEnded ? 0 : 1,
           transition: 'opacity 0.5s ease-out'
         }}>
@@ -970,8 +999,9 @@ export default function HomePage() {
             className="hidden md:block"
             style={{
               position: 'absolute',
-              top: 0,
-              left: 0,
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
               width: '100vw',
               height: '100vh',
               minWidth: '100%',
@@ -990,12 +1020,13 @@ export default function HomePage() {
             className="md:hidden"
             style={{
               position: 'absolute',
-              top: 0,
-              left: 0,
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
               width: '100vw',
               height: '100vh',
-              minWidth: '100%',
-              minHeight: '100%',
+              minWidth: '110%',
+              minHeight: '110%',
               objectFit: 'cover'
             }}
             playsInline
