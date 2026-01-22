@@ -980,12 +980,12 @@ export default function HomePage() {
       {showIntroVideo && (
         <div style={{
           position: 'fixed',
-          top: '-50px',
-          left: '-50px',
-          right: '-50px',
-          bottom: '-50px',
-          width: 'calc(100vw + 100px)',
-          height: 'calc(100dvh + 100px)',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100dvh',
           backgroundColor: '#000',
           zIndex: 9999,
           overflow: 'hidden',
@@ -1020,14 +1020,11 @@ export default function HomePage() {
             className="md:hidden"
             style={{
               position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 'calc(100vw + 100px)',
-              height: 'calc(100dvh + 100px)',
-              minWidth: '120%',
-              minHeight: '120%',
-              objectFit: 'cover'
+              top: '0',
+              left: '0',
+              width: '100vw',
+              height: '100dvh',
+              objectFit: 'contain'
             }}
             playsInline
             muted
