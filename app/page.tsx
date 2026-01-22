@@ -128,6 +128,7 @@ export default function HomePage() {
   const [showIntroVideo, setShowIntroVideo] = useState(true)
   const [introVideoEnded, setIntroVideoEnded] = useState(false)
   const introVideoRef = useRef<HTMLVideoElement>(null)
+  const introVideoMobileRef = useRef<HTMLVideoElement>(null)
   const heroImagesDesktop = [
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportadahorizontal.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2horizontal.png',
@@ -545,17 +546,10 @@ export default function HomePage() {
     }
   }, [heroApi])
 
-  // Intro video handler - only for desktop
+  // Intro video handler - for both desktop and mobile
   useEffect(() => {
     const isDesktop = window.innerWidth >= 768
-    
-    if (!isDesktop) {
-      setShowIntroVideo(false)
-      setIntroVideoEnded(true)
-      return
-    }
-
-    const video = introVideoRef.current
+    const video = isDesktop ? introVideoRef.current : introVideoMobileRef.current
     if (!video) return
 
     const handleVideoEnd = () => {
@@ -939,7 +933,7 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       
-      {/* Intro Video Overlay - Desktop Only */}
+      {/* Intro Video Overlay - Desktop and Mobile */}
       {showIntroVideo && (
         <div style={{
           position: 'fixed',
@@ -955,8 +949,10 @@ export default function HomePage() {
           opacity: introVideoEnded ? 0 : 1,
           transition: 'opacity 0.5s ease-out'
         }}>
+          {/* Desktop Video */}
           <video
             ref={introVideoRef}
+            className="hidden md:block"
             style={{
               width: '100%',
               height: '100%',
@@ -967,6 +963,21 @@ export default function HomePage() {
             preload="auto"
           >
             <source src="https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_193233_d709af2e-e871-41f2-ba47-7cb4d1fa2880.mp4" type="video/mp4" />
+          </video>
+          {/* Mobile Video */}
+          <video
+            ref={introVideoMobileRef}
+            className="md:hidden"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover'
+            }}
+            playsInline
+            muted
+            preload="auto"
+          >
+            <source src="https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_203312_63a04753-3358-436e-bfef-cdaf36f92739.mp4" type="video/mp4" />
           </video>
         </div>
       )}
