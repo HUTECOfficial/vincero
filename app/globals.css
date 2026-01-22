@@ -4,32 +4,38 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Tema oscuro y sofisticado para VINCERO */
-  --background: oklch(0.98 0.005 90);
-  --foreground: oklch(0.15 0.01 260);
-  --card: oklch(0.99 0 0);
-  --card-foreground: oklch(0.15 0.01 260);
-  --popover: oklch(0.99 0 0);
-  --popover-foreground: oklch(0.15 0.01 260);
-  --primary: oklch(0.18 0.02 280);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.88 0.02 90);
-  --secondary-foreground: oklch(0.15 0.01 260);
-  --muted: oklch(0.93 0.005 90);
-  --muted-foreground: oklch(0.45 0.01 260);
-  --accent: oklch(0.88 0.02 85);
-  --accent-foreground: oklch(0.15 0.01 260);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.88 0.01 90);
-  --input: oklch(0.88 0.01 90);
-  --ring: oklch(0.18 0.02 280);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.5rem;
+  /* Neumorphism theme for VINCERO */
+  --background: #E0E5EC;
+  --foreground: #4A5568;
+  --card: #E0E5EC;
+  --card-foreground: #4A5568;
+  --popover: #E0E5EC;
+  --popover-foreground: #4A5568;
+  --primary: #D4AF37;
+  --primary-foreground: #ffffff;
+  --secondary: #E0E5EC;
+  --secondary-foreground: #4A5568;
+  --muted: #d1d5db;
+  --muted-foreground: #6b7280;
+  --accent: #E0E5EC;
+  --accent-foreground: #4A5568;
+  --destructive: oklch(0.55 0.25 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: rgba(255, 255, 255, 0.3);
+  --input: #E0E5EC;
+  --ring: #D4AF37;
+  --radius: 1rem;
+  
+  /* Neumorphism shadows */
+  --neu-shadow-light: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+  --neu-shadow-small: 9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255, 0.5);
+  --neu-shadow-inset: inset 6px 6px 12px #bebebe, inset -6px -6px 12px #ffffff;
+  --neu-shadow-btn: 5px 5px 15px rgba(163,177,198,0.5), -5px -5px 15px rgba(255,255,255, 0.7);
+  --chart-1: oklch(0.65 0.25 260);
+  --chart-2: oklch(0.75 0.20 160);
+  --chart-3: oklch(0.55 0.25 25);
+  --chart-4: oklch(0.85 0.15 85);
+  --chart-5: oklch(0.70 0.22 50);
   --sidebar: oklch(0.98 0.005 90);
   --sidebar-foreground: oklch(0.15 0.01 260);
   --sidebar-primary: oklch(0.18 0.02 280);
@@ -117,6 +123,43 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Neumorphism utilities */
+  .neu-shadow {
+    box-shadow: var(--neu-shadow-light);
+  }
+  
+  .neu-shadow-sm {
+    box-shadow: var(--neu-shadow-small);
+  }
+  
+  .neu-shadow-inset {
+    box-shadow: var(--neu-shadow-inset);
+  }
+  
+  .neu-btn {
+    box-shadow: var(--neu-shadow-btn);
+  }
+  
+  .neu-btn:active {
+    box-shadow: var(--neu-shadow-inset);
+  }
+  
+  /* Glass panel effect */
+  .glass-panel {
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  }
+  
+  .glass-btn {
+    backdrop-filter: blur(8px) saturate(180%);
+    -webkit-backdrop-filter: blur(8px) saturate(180%);
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
   
   /* Optimización de scroll suave */

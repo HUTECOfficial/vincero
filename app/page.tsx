@@ -125,8 +125,16 @@ export default function HomePage() {
   const [showHeaderLogo, setShowHeaderLogo] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [slideProgress, setSlideProgress] = useState(0)
-  const heroImagesDesktop = ['/10.png', '/14.png', '/15.png']
-  const heroImagesMobile = ['/10.png', '/17.png', '/16.png']
+  const heroImagesDesktop = [
+    'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportadahorizontal.png',
+    'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2horizontal.png',
+    'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada3horizontal.png'
+  ]
+  const heroImagesMobile = [
+    'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada.png',
+    'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2vertical.png',
+    'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada3vertical.png'
+  ]
   
   const heroRef = useRef<HTMLDivElement>(null)
   const shopRef = useRef<HTMLDivElement>(null)
@@ -901,30 +909,90 @@ export default function HomePage() {
           }}
         />
       </div>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-background/95 via-background/80 to-transparent backdrop-blur-sm">
-        <nav className="container mx-auto px-4 md:px-6 py-4 md:py-6">
-          <div className="flex items-center justify-between">
+      <header style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        transform: showHeaderLogo ? 'translateY(0)' : 'translateY(-100%)',
+        opacity: showHeaderLogo ? 1 : 0,
+        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+      }}>
+        <nav style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.75rem 1.5rem',
+          backgroundColor: '#E0E5EC',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          transition: 'all 0.3s ease'
+        }}>
+          {/* Language Switcher - Left */}
+          <div style={{ flex: '0 0 auto' }}>
             <LanguageSwitcher />
-            
-            <div className="text-center flex items-center justify-center">
-              <div className={`bg-white/90 px-6 py-2 rounded-lg shadow-md transition-all duration-300 ${showHeaderLogo ? 'opacity-100' : 'opacity-0'}`}>
-                <img 
-                  src="/vincero LOGO.png" 
-                  alt="Vincero Logo" 
-                  className="h-12 md:h-16 w-auto" 
-                />
-              </div>
-            </div>
-
-            <button onClick={() => setIsCartOpen(true)} className="relative hover:scale-110 transition-transform">
-              <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
-              {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 w-4 h-4 md:w-5 md:h-5 bg-primary text-primary-foreground text-[10px] md:text-xs rounded-full flex items-center justify-center font-bold">
-                  {cart.length}
-                </span>
-              )}
-            </button>
           </div>
+          
+          {/* Logo - Center */}
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <div className={`transition-all duration-300 ${showHeaderLogo ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+              <img 
+                src="/vincero LOGO.png" 
+                alt="Vincero Logo" 
+                style={{
+                  height: '2rem',
+                  width: 'auto'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Cart - Right */}
+          <button 
+            onClick={() => setIsCartOpen(true)} 
+            style={{
+              position: 'relative',
+              flex: '0 0 auto',
+              padding: '0.5rem',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'transform 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <ShoppingCart style={{ width: '1.5rem', height: '1.5rem', color: 'rgb(30, 30, 30)' }} />
+            {cart.length > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-0.25rem',
+                right: '-0.25rem',
+                width: '1.125rem',
+                height: '1.125rem',
+                backgroundColor: 'rgb(251, 191, 36)',
+                color: 'white',
+                fontSize: '0.625rem',
+                borderRadius: '9999px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold'
+              }}>
+                {cart.length}
+              </span>
+            )}
+          </button>
         </nav>
       </header>
 
@@ -1016,8 +1084,8 @@ export default function HomePage() {
           zIndex: 10
         }} />
 
-        <div className="absolute inset-0 flex flex-col items-center z-20 px-4">
-          <div className="text-center animate-fade-in-up bg-black/25 backdrop-blur-[3px] px-5 py-3 md:px-6 md:py-4 rounded-xl border border-white/10 mt-16 md:mt-20">
+        <div className="absolute inset-0 flex flex-col items-center z-50 px-4 pointer-events-none">
+          <div className="text-center animate-fade-in-up bg-black/25 backdrop-blur-[3px] px-5 py-3 md:px-6 md:py-4 rounded-xl border border-white/10 mt-16 md:mt-20 pointer-events-auto">
             <img 
               src="/vincero LOGO.png" 
               alt="Vincero" 
@@ -1029,7 +1097,7 @@ export default function HomePage() {
           </div>
 
           {currentSlide === 0 && (
-            <div className="absolute bottom-32 md:bottom-40 animate-fade-in-up-delayed">
+            <div className="absolute bottom-32 md:bottom-40 animate-fade-in-up-delayed pointer-events-auto">
               <Button 
                 size="lg" 
                 onClick={() => {
@@ -1048,7 +1116,7 @@ export default function HomePage() {
       </section>
 
       {/* Promotions Carousel */}
-      <section className="py-8 md:py-12 bg-gradient-to-b from-background to-secondary/10">
+      <section className="py-8 md:py-12 bg-muted/20">
         <div className="container mx-auto px-4">
           <Carousel
             opts={{
@@ -1059,38 +1127,33 @@ export default function HomePage() {
           >
             <CarouselContent className="-ml-2 md:-ml-4">
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                <div className="relative h-40 md:h-48 rounded-2xl overflow-hidden bg-gradient-to-r from-[#1a1a2e] to-[#16213e] p-6 flex items-center">
-                  <div className="text-white z-10">
-                    <p className="text-sm font-medium opacity-90 mb-1">Promoción Especial</p>
-                    <h3 className="text-2xl md:text-3xl font-bold mb-2">Envío Gratis</h3>
-                    <p className="text-sm opacity-90">En compras mayores a $800 MXN</p>
+                <div className="relative h-40 md:h-48 rounded-2xl overflow-hidden bg-card p-6 flex items-center" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' }}>
+                  <div className="z-10">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Promoción Especial</p>
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">Envío Gratis</h3>
+                    <p className="text-sm text-muted-foreground">En compras mayores a $800 MXN</p>
                   </div>
-                  <Truck className="absolute right-4 bottom-4 w-20 h-20 text-white/20" />
-                </div>
-              </CarouselItem>
-                            <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                <div className="relative h-40 md:h-48 rounded-2xl overflow-hidden bg-gradient-to-r from-[#b8860b] to-[#d4a84b] p-6 flex items-center">
-                  <div className="text-white z-10">
-                    <p className="text-sm font-medium opacity-90 mb-1">Calidad Garantizada</p>
-                    <h3 className="text-2xl md:text-3xl font-bold mb-2">30 Días</h3>
-                    <p className="text-sm opacity-90">Garantía en todos los productos</p>
-                  </div>
-                  <Shield className="absolute right-4 bottom-4 w-20 h-20 text-white/20" />
                 </div>
               </CarouselItem>
               <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                <div className="relative h-40 md:h-48 rounded-2xl overflow-hidden bg-gradient-to-r from-[#2d2d2d] to-[#4a4a4a] p-6 flex items-center">
-                  <div className="text-white z-10">
-                    <p className="text-sm font-medium opacity-90 mb-1">Atención Personalizada</p>
-                    <h3 className="text-2xl md:text-3xl font-bold mb-2">WhatsApp</h3>
-                    <p className="text-sm opacity-90">Compra fácil y segura</p>
+                <div className="relative h-40 md:h-48 rounded-2xl overflow-hidden bg-card p-6 flex items-center" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' }}>
+                  <div className="z-10">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Calidad Garantizada</p>
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">30 Días</h3>
+                    <p className="text-sm text-muted-foreground">Garantía de devolución</p>
                   </div>
-                  <MessageCircle className="absolute right-4 bottom-4 w-20 h-20 text-white/20" />
+                </div>
+              </CarouselItem>
+              <CarouselItem className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
+                <div className="relative h-40 md:h-48 rounded-2xl overflow-hidden bg-card p-6 flex items-center" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' }}>
+                  <div className="z-10">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">Atención Personalizada</p>
+                    <h3 className="text-2xl md:text-3xl font-bold mb-2 text-foreground">WhatsApp</h3>
+                    <p className="text-sm text-muted-foreground">Respuesta inmediata</p>
+                  </div>
                 </div>
               </CarouselItem>
             </CarouselContent>
-            <CarouselPrevious className="hidden md:flex -left-4 bg-background/80 backdrop-blur-sm" />
-            <CarouselNext className="hidden md:flex -right-4 bg-background/80 backdrop-blur-sm" />
           </Carousel>
           <p className="text-center text-sm text-muted-foreground mt-4 md:hidden">← Desliza para ver más →</p>
         </div>
@@ -1102,38 +1165,64 @@ export default function HomePage() {
         left: '50%', 
         transform: `translateX(-50%) translateY(${showHeaderLogo ? '0' : '150%'})`,
         zIndex: 50,
-        transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease',
+        transition: 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease',
         opacity: showHeaderLogo ? 1 : 0,
       }}>
-        <nav style={{ 
+        <nav className="glass-panel" style={{ 
+          position: 'relative',
           display: 'flex', 
           alignItems: 'center', 
-          gap: '0.5rem',
-          padding: '0.5rem 0.75rem',
-          backgroundColor: 'rgba(26, 26, 46, 0.85)',
-          backdropFilter: 'blur(24px)',
+          gap: '0.25rem',
+          padding: '0.625rem 1rem',
           borderRadius: '9999px',
-          border: '2px solid rgba(255, 255, 255, 0.15)',
-          boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.1)'
+          overflow: 'hidden'
         }}>
+          {/* Animated gradient background blob */}
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: activeNav === 'home' ? '8%' : activeNav === 'discover' ? '28%' : activeNav === 'wishlist' ? '48%' : activeNav === 'profile' ? '68%' : '88%',
+            transform: 'translate(-50%, -50%)',
+            width: '3.5rem',
+            height: '3.5rem',
+            background: activeNav === 'wishlist' 
+              ? 'linear-gradient(135deg, rgba(244, 63, 94, 0.4) 0%, rgba(220, 38, 38, 0.3) 100%)'
+              : 'linear-gradient(135deg, rgba(212, 175, 55, 0.5) 0%, rgba(212, 175, 55, 0.4) 100%)',
+            borderRadius: '50%',
+            filter: 'blur(16px)',
+            transition: 'all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            opacity: 0.8,
+            pointerEvents: 'none',
+            zIndex: 0
+          }} />
+
           <button 
             onClick={() => {
               setActiveNav('home')
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }}
-            style={{ padding: '0.375rem', cursor: 'pointer', background: 'none', border: 'none' }}
+            style={{ 
+              position: 'relative',
+              padding: '0.5rem', 
+              cursor: 'pointer', 
+              background: 'none', 
+              border: 'none',
+              zIndex: 1
+            }}
           >
             <div style={{ 
-              width: '2rem', 
-              height: '2rem', 
+              width: '2.5rem', 
+              height: '2.5rem', 
               borderRadius: '50%', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
-              backgroundColor: activeNav === 'home' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s'
+              backgroundColor: activeNav === 'home' ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+              transform: activeNav === 'home' ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              boxShadow: activeNav === 'home' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'
             }}>
-              <Home className={`w-4 h-4 ${activeNav === 'home' ? 'text-gray-900' : 'text-white/80'}`} />
+              <Home className={`w-5 h-5 transition-all duration-300 ${activeNav === 'home' ? 'text-gray-900' : 'text-gray-700'}`} />
             </div>
           </button>
 
@@ -1142,19 +1231,28 @@ export default function HomePage() {
               setActiveNav('discover')
               setIsSearchOpen(true)
             }}
-            style={{ padding: '0.375rem', cursor: 'pointer', background: 'none', border: 'none' }}
+            style={{ 
+              position: 'relative',
+              padding: '0.5rem', 
+              cursor: 'pointer', 
+              background: 'none', 
+              border: 'none',
+              zIndex: 1
+            }}
           >
             <div style={{ 
-              width: '2rem', 
-              height: '2rem', 
+              width: '2.5rem', 
+              height: '2.5rem', 
               borderRadius: '50%', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
-              backgroundColor: activeNav === 'discover' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s'
+              backgroundColor: activeNav === 'discover' ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+              transform: activeNav === 'discover' ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              boxShadow: activeNav === 'discover' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'
             }}>
-              <Search className={`w-4 h-4 ${activeNav === 'discover' ? 'text-gray-900' : 'text-white/80'}`} />
+              <Search className={`w-5 h-5 transition-all duration-300 ${activeNav === 'discover' ? 'text-gray-900' : 'text-gray-700'}`} />
             </div>
           </button>
 
@@ -1163,35 +1261,46 @@ export default function HomePage() {
               setActiveNav('wishlist')
               setIsWishlistOpen(true)
             }}
-            style={{ padding: '0.375rem', cursor: 'pointer', background: 'none', border: 'none', position: 'relative' }}
+            style={{ 
+              position: 'relative',
+              padding: '0.5rem', 
+              cursor: 'pointer', 
+              background: 'none', 
+              border: 'none',
+              zIndex: 1
+            }}
           >
             <div style={{ 
-              width: '2rem', 
-              height: '2rem', 
+              width: '2.5rem', 
+              height: '2.5rem', 
               borderRadius: '50%', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
-              backgroundColor: activeNav === 'wishlist' ? 'rgba(244, 63, 94, 0.8)' : 'rgba(255, 255, 255, 0.1)',
-              transition: 'all 0.3s'
+              backgroundColor: activeNav === 'wishlist' ? 'rgba(244, 63, 94, 0.95)' : 'transparent',
+              transform: activeNav === 'wishlist' ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              boxShadow: activeNav === 'wishlist' ? '0 4px 12px rgba(244, 63, 94, 0.4)' : 'none'
             }}>
-              <Heart className={`w-4 h-4 ${activeNav === 'wishlist' ? 'text-white' : 'text-foreground/80'} ${wishlist.length > 0 ? 'fill-current' : ''}`} />
+              <Heart className={`w-5 h-5 transition-all duration-300 ${activeNav === 'wishlist' ? 'text-white' : 'text-gray-700'} ${wishlist.length > 0 ? 'fill-current' : ''}`} />
             </div>
             {wishlist.length > 0 && (
               <span style={{
                 position: 'absolute',
                 top: '-0.25rem',
                 right: '-0.25rem',
-                width: '1rem',
-                height: '1rem',
-                backgroundColor: 'rgb(244, 63, 94)',
+                width: '1.125rem',
+                height: '1.125rem',
+                background: 'linear-gradient(135deg, rgb(244, 63, 94) 0%, rgb(220, 38, 38) 100%)',
                 color: 'white',
                 fontSize: '0.625rem',
                 borderRadius: '9999px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                border: '2px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 2px 8px rgba(244, 63, 94, 0.4)'
               }}>
                 {wishlist.length}
               </span>
@@ -1203,19 +1312,28 @@ export default function HomePage() {
               setActiveNav('profile')
               setIsProfileOpen(true)
             }}
-            style={{ padding: '0.375rem', cursor: 'pointer', background: 'none', border: 'none' }}
+            style={{ 
+              position: 'relative',
+              padding: '0.5rem', 
+              cursor: 'pointer', 
+              background: 'none', 
+              border: 'none',
+              zIndex: 1
+            }}
           >
             <div style={{ 
-              width: '2rem', 
-              height: '2rem', 
+              width: '2.5rem', 
+              height: '2.5rem', 
               borderRadius: '50%', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
-              backgroundColor: activeNav === 'profile' ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s'
+              backgroundColor: activeNav === 'profile' ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+              transform: activeNav === 'profile' ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              boxShadow: activeNav === 'profile' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'
             }}>
-              <User className={`w-4 h-4 ${activeNav === 'profile' ? 'text-gray-900' : 'text-white/80'}`} />
+              <User className={`w-5 h-5 transition-all duration-300 ${activeNav === 'profile' ? 'text-gray-900' : 'text-gray-700'}`} />
             </div>
           </button>
 
@@ -1224,49 +1342,55 @@ export default function HomePage() {
               setActiveNav('menu')
               setIsMenuOpen(!isMenuOpen)
             }}
-            style={{ padding: '0.375rem', cursor: 'pointer', background: 'none', border: 'none' }}
+            style={{ 
+              position: 'relative',
+              padding: '0.5rem', 
+              cursor: 'pointer', 
+              background: 'none', 
+              border: 'none',
+              zIndex: 1
+            }}
           >
             <div style={{ 
-              width: '2rem', 
-              height: '2rem', 
+              width: '2.5rem', 
+              height: '2.5rem', 
               borderRadius: '50%', 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
-              backgroundColor: activeNav === 'menu' || isMenuOpen ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s'
+              backgroundColor: activeNav === 'menu' || isMenuOpen ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+              transform: activeNav === 'menu' || isMenuOpen ? 'scale(1.1)' : 'scale(1)',
+              transition: 'all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+              boxShadow: activeNav === 'menu' || isMenuOpen ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'
             }}>
-              <Menu className={`w-4 h-4 ${activeNav === 'menu' || isMenuOpen ? 'text-gray-900' : 'text-white/80'}`} />
+              <Menu className={`w-5 h-5 transition-all duration-300 ${activeNav === 'menu' || isMenuOpen ? 'text-gray-900' : 'text-gray-700'}`} />
             </div>
           </button>
         </nav>
 
         {/* Menu Popup */}
         {isMenuOpen && (
-          <div style={{
+          <div className="glass-panel" style={{
             position: 'absolute',
             bottom: '100%',
             left: '50%',
             transform: 'translateX(-50%)',
             marginBottom: '0.75rem',
-            backgroundColor: 'rgba(26, 26, 46, 0.95)',
-            backdropFilter: 'blur(24px)',
-            borderRadius: '1rem',
-            border: '2px solid rgba(255, 255, 255, 0.15)',
-            boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
-            padding: '0.5rem',
-            minWidth: '160px'
+            borderRadius: '1.25rem',
+            padding: '0.75rem',
+            minWidth: '180px',
+            animation: 'fadeInUp 0.3s ease-out'
           }}>
-            <a href="/" style={{ display: 'block', padding: '0.75rem 1rem', color: 'white', textDecoration: 'none', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }} className="hover:bg-white/10">
+            <a href="/" style={{ display: 'block', padding: '0.875rem 1.25rem', color: '#4A5568', textDecoration: 'none', borderRadius: '0.75rem', fontSize: '0.9375rem', fontWeight: '500', transition: 'all 0.2s' }} className="hover:bg-white/40">
               {t.home}
             </a>
-            <a href="/catalog" style={{ display: 'block', padding: '0.75rem 1rem', color: 'white', textDecoration: 'none', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }} className="hover:bg-white/10">
+            <a href="/catalog" style={{ display: 'block', padding: '0.875rem 1.25rem', color: '#4A5568', textDecoration: 'none', borderRadius: '0.75rem', fontSize: '0.9375rem', fontWeight: '500', transition: 'all 0.2s' }} className="hover:bg-white/40">
               {t.catalog}
             </a>
-            <a href="/features" style={{ display: 'block', padding: '0.75rem 1rem', color: 'white', textDecoration: 'none', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }} className="hover:bg-white/10">
+            <a href="/features" style={{ display: 'block', padding: '0.875rem 1.25rem', color: '#4A5568', textDecoration: 'none', borderRadius: '0.75rem', fontSize: '0.9375rem', fontWeight: '500', transition: 'all 0.2s' }} className="hover:bg-white/40">
               {t.whyChoose}
             </a>
-            <a href="/about" style={{ display: 'block', padding: '0.75rem 1rem', color: 'white', textDecoration: 'none', borderRadius: '0.5rem', fontSize: '0.875rem', fontWeight: '500' }} className="hover:bg-white/10">
+            <a href="/about" style={{ display: 'block', padding: '0.875rem 1.25rem', color: '#4A5568', textDecoration: 'none', borderRadius: '0.75rem', fontSize: '0.9375rem', fontWeight: '500', transition: 'all 0.2s' }} className="hover:bg-white/40">
               {t.aboutUs}
             </a>
           </div>
@@ -2149,7 +2273,7 @@ export default function HomePage() {
         </div>
       )}
 
-      <section ref={shopRef} className="py-24 lg:py-32 bg-gradient-to-b from-background to-secondary/20">
+      <section ref={shopRef} className="py-24 lg:py-32 bg-background">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance">
@@ -2166,10 +2290,14 @@ export default function HomePage() {
               return (
                 <Card 
                   key={product.id} 
-                  className="group cursor-pointer overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 scroll-reveal"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  className="group cursor-pointer overflow-hidden border-0 transition-all duration-300 scroll-reveal neu-shadow"
+                  style={{ 
+                    animationDelay: `${index * 0.1}s`,
+                    backgroundColor: '#E0E5EC',
+                    borderRadius: '1.5rem'
+                  }}
                 >
-                  <div className="relative overflow-hidden bg-gradient-to-br from-secondary/50 to-accent/20">
+                  <div className="relative overflow-hidden" style={{ backgroundColor: '#d1d5db', borderRadius: '1.5rem 1.5rem 0 0' }}>
                     {getProductBadge(product) && (
                       <div className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-medium">
                         {getProductBadge(product)}
@@ -2244,7 +2372,12 @@ export default function HomePage() {
           </div>
 
           <div className="text-center mt-12 scroll-reveal">
-            <Button size="lg" variant="outline" className="text-base px-8 py-6 border-2">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="text-base px-8 py-6 border-2"
+              onClick={() => window.location.href = '/shop'}
+            >
               {t.viewCollection}
               <ChevronRight className="ml-2 w-5 h-5" />
             </Button>
@@ -2252,7 +2385,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section ref={featuresRef} className="py-24 lg:py-32 relative">
+      <section ref={featuresRef} className="py-24 lg:py-32 relative bg-muted/20">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="text-center mb-16 scroll-reveal">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-balance">
@@ -2265,7 +2398,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            <Card className="md:col-span-2 lg:row-span-2 p-8 bg-gradient-to-br from-card to-secondary/30 border-2 hover:border-primary/50 transition-all duration-300 group scroll-reveal">
+            <Card className="md:col-span-2 lg:row-span-2 p-8 bg-card border-0 hover:shadow-xl transition-all duration-300 group scroll-reveal" style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' }}>
               <div className="h-full flex flex-col justify-between">
                 <div>
                   <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -2286,9 +2419,9 @@ export default function HomePage() {
               </div>
             </Card>
 
-            <Card className="p-8 bg-gradient-to-br from-card to-accent/20 border-2 hover:border-primary/50 transition-all duration-300 group scroll-reveal" style={{ animationDelay: '0.1s' }}>
-              <div className="w-14 h-14 bg-accent/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Zap className="w-7 h-7 text-accent-foreground" />
+            <Card className="p-8 bg-card border-0 hover:shadow-xl transition-all duration-300 group scroll-reveal" style={{ animationDelay: '0.1s', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' }}>
+              <div className="w-14 h-14 bg-muted rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <Zap className="w-7 h-7 text-foreground" />
               </div>
               <h3 className="text-2xl font-bold mb-3">{t.innovativeDesign}</h3>
               <p className="text-muted-foreground leading-relaxed">
@@ -2296,7 +2429,7 @@ export default function HomePage() {
               </p>
             </Card>
 
-            <Card className="p-8 bg-gradient-to-br from-card to-primary/10 border-2 hover:border-primary/50 transition-all duration-300 group scroll-reveal" style={{ animationDelay: '0.2s' }}>
+            <Card className="p-8 bg-card border-0 hover:shadow-xl transition-all duration-300 group scroll-reveal" style={{ animationDelay: '0.2s', boxShadow: '0 2px 8px rgba(0, 0, 0, 0.06)' }}>
               <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <TrendingUp className="w-7 h-7 text-primary" />
               </div>
