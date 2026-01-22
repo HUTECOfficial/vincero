@@ -10,6 +10,8 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuth } from '@/lib/AuthContext'
 import { ChristmasEffects } from '@/components/ChristmasEffects'
 import { createOrder, getUserOrders } from '@/lib/supabase'
+import { AnalyticsTracker } from '@/components/AnalyticsTracker'
+import { trackEvent, trackProductView } from '@/lib/analytics'
 
 interface Product {
   id: number
@@ -625,6 +627,13 @@ export default function HomePage() {
       }
       return [...prevCart, { ...product, quantity: 1, size }]
     })
+    setSelectedProduct(null)
+    setSelectedSize('')
+    trackEvent('add_to_cart', 'ecommerce', getProductName(product), product.price, {
+      product_id: product.id,
+      size: size,
+      color: product.color
+    })
   }
 
   const openSizeSelector = (product: Product) => {
@@ -635,6 +644,9 @@ export default function HomePage() {
   const openProductDetail = (product: Product) => {
     setProductDetailView(product)
     setSelectedImageIndex(0)
+    // Track product view
+    trackProductView(product.id, getProductName(product))
+    trackEvent('product_view', 'engagement', getProductName(product), product.price)
   }
 
   const openCollection = (collectionType: string) => {
@@ -927,6 +939,9 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Analytics Tracker */}
+      <AnalyticsTracker />
+      
       {/* Structured Data for SEO */}
       <script
         type="application/ld+json"
