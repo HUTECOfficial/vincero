@@ -10,7 +10,6 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuth } from '@/lib/AuthContext'
 import { createOrder, getUserOrders } from '@/lib/supabase'
 import { DynamicIsland } from '@/components/DynamicIsland'
-import { ChristmasEffects } from '@/components/ChristmasEffects'
 import Link from 'next/link'
 
 interface Product {
@@ -601,9 +600,6 @@ function ShopContent() {
 
   return (
     <div className="min-h-screen bg-background relative">
-      {/* Christmas Effects */}
-      <ChristmasEffects />
-
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div 
           className="absolute inset-0 opacity-[0.02]"

@@ -8,7 +8,6 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { useLanguage } from '@/lib/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuth } from '@/lib/AuthContext'
-import { ChristmasEffects } from '@/components/ChristmasEffects'
 import { createOrder, getUserOrders, supabase } from '@/lib/supabase'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { trackEvent, trackProductView } from '@/lib/analytics'
@@ -1045,9 +1044,6 @@ export default function HomePage() {
       )}
       
       <div className="min-h-screen bg-background relative">
-        {/* Christmas Effects */}
-        <ChristmasEffects />
-
       {/* Decorative Background Elements */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {/* Subtle Grid Pattern */}
