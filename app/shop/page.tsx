@@ -610,28 +610,88 @@ function ShopContent() {
         />
       </div>
 
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-background/95 via-background/80 to-transparent backdrop-blur-sm">
-        <nav className="container mx-auto px-4 md:px-6 py-4 md:py-6">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="hover:opacity-80 transition-opacity">
-              <LanguageSwitcher />
-            </Link>
-            
-            <div className="text-center flex items-center justify-center">
-              <Link href="/" className="bg-white/90 px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all">
-                <img src="/vincero LOGO.png" alt="Vincero Logo" className="h-12 md:h-16 w-auto" />
-              </Link>
-            </div>
-
-            <button onClick={() => setIsCartOpen(true)} className="relative hover:scale-110 transition-transform">
-              <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
-              {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 w-4 h-4 md:w-5 md:h-5 bg-primary text-primary-foreground text-[10px] md:text-xs rounded-full flex items-center justify-center font-bold">
-                  {cart.length}
-                </span>
-              )}
-            </button>
+      <header style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50
+      }}>
+        <nav style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.75rem 1.5rem',
+          backgroundColor: '#E0E5EC',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          transition: 'all 0.3s ease'
+        }}>
+          {/* Language Switcher - Left */}
+          <div style={{ flex: '0 0 auto' }}>
+            <LanguageSwitcher />
           </div>
+          
+          {/* Logo - Center */}
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <Link href="/">
+              <img 
+                src="/vincero LOGO.png" 
+                alt="Vincero Logo" 
+                style={{
+                  height: '2rem',
+                  width: 'auto',
+                  cursor: 'pointer'
+                }}
+              />
+            </Link>
+          </div>
+
+          {/* Cart - Right */}
+          <button 
+            onClick={() => setIsCartOpen(true)} 
+            style={{
+              position: 'relative',
+              flex: '0 0 auto',
+              padding: '0.5rem',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'transform 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <ShoppingCart style={{ width: '1.5rem', height: '1.5rem', color: 'rgb(30, 30, 30)' }} />
+            {cart.length > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-0.25rem',
+                right: '-0.25rem',
+                width: '1.125rem',
+                height: '1.125rem',
+                backgroundColor: 'rgb(251, 191, 36)',
+                color: 'white',
+                fontSize: '0.625rem',
+                borderRadius: '9999px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 'bold'
+              }}>
+                {cart.length}
+              </span>
+            )}
+          </button>
         </nav>
       </header>
 

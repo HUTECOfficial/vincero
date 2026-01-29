@@ -25,23 +25,51 @@ export default function FeaturesPage() {
         />
       </div>
 
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-background/95 via-background/80 to-transparent backdrop-blur-sm">
-        <nav className="container mx-auto px-4 md:px-6 py-4 md:py-6">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="hover:opacity-80 transition-opacity">
-              <LanguageSwitcher />
-            </Link>
-            
-            <div className="text-center flex items-center justify-center">
-              <Link href="/" className="bg-white/90 px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all">
-                <img src="/vincero LOGO.png" alt="Vincero Logo" className="h-12 md:h-16 w-auto" />
-              </Link>
-            </div>
-
-            <Link href="/shop" className="text-sm font-medium hover:text-primary transition-colors">
-              {t.bestSellers}
+      <header style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50
+      }}>
+        <nav style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.75rem 1.5rem',
+          backgroundColor: '#E0E5EC',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          transition: 'all 0.3s ease'
+        }}>
+          {/* Language Switcher - Left */}
+          <div style={{ flex: '0 0 auto' }}>
+            <LanguageSwitcher />
+          </div>
+          
+          {/* Logo - Center */}
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <Link href="/">
+              <img 
+                src="/vincero LOGO.png" 
+                alt="Vincero Logo" 
+                style={{
+                  height: '2rem',
+                  width: 'auto',
+                  cursor: 'pointer'
+                }}
+              />
             </Link>
           </div>
+
+          {/* Empty space for symmetry - Right */}
+          <div style={{ flex: '0 0 auto', width: '2.5rem' }}></div>
         </nav>
       </header>
 

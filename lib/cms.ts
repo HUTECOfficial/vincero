@@ -96,91 +96,121 @@ export interface CMSImage {
 // =====================================================
 
 export const getHeroImages = async (): Promise<HeroImage[]> => {
-  const { data, error } = await supabase
-    .from('hero_images')
-    .select('*')
-    .eq('is_active', true)
-    .order('position', { ascending: true })
+  try {
+    const { data, error } = await supabase
+      .from('hero_images')
+      .select('*')
+      .eq('is_active', true)
+      .order('position', { ascending: true })
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching hero images:', error)
+      return []
+    }
+    return data || []
+  } catch (error) {
     console.error('Error fetching hero images:', error)
     return []
   }
-  return data || []
 }
 
 export const getCMSSections = async (): Promise<CMSSection[]> => {
-  const { data, error } = await supabase
-    .from('cms_sections')
-    .select('*')
-    .eq('is_active', true)
+  try {
+    const { data, error } = await supabase
+      .from('cms_sections')
+      .select('*')
+      .eq('is_active', true)
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching CMS sections:', error)
+      return []
+    }
+    return data || []
+  } catch (error) {
     console.error('Error fetching CMS sections:', error)
     return []
   }
-  return data || []
 }
 
 export const getCMSSection = async (sectionName: string): Promise<CMSSection | null> => {
-  const { data, error } = await supabase
-    .from('cms_sections')
-    .select('*')
-    .eq('section_name', sectionName)
-    .single()
+  try {
+    const { data, error } = await supabase
+      .from('cms_sections')
+      .select('*')
+      .eq('section_name', sectionName)
+      .single()
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching CMS section:', error)
+      return null
+    }
+    return data
+  } catch (error) {
     console.error('Error fetching CMS section:', error)
     return null
   }
-  return data
 }
 
 export const getCMSProducts = async (): Promise<CMSProduct[]> => {
-  const { data, error } = await supabase
-    .from('cms_products')
-    .select('*')
-    .eq('is_active', true)
-    .order('position', { ascending: true })
+  try {
+    const { data, error } = await supabase
+      .from('cms_products')
+      .select('*')
+      .eq('is_active', true)
+      .order('position', { ascending: true })
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching CMS products:', error)
+      return []
+    }
+    return data || []
+  } catch (error) {
     console.error('Error fetching CMS products:', error)
     return []
   }
-  return data || []
 }
 
 export const getCMSTestimonials = async (): Promise<CMSTestimonial[]> => {
-  const { data, error } = await supabase
-    .from('cms_testimonials')
-    .select('*')
-    .eq('is_active', true)
-    .order('position', { ascending: true })
+  try {
+    const { data, error } = await supabase
+      .from('cms_testimonials')
+      .select('*')
+      .eq('is_active', true)
+      .order('position', { ascending: true })
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching CMS testimonials:', error)
+      return []
+    }
+    return data || []
+  } catch (error) {
     console.error('Error fetching CMS testimonials:', error)
     return []
   }
-  return data || []
 }
 
 export const getSiteContent = async (section: string, language: string = 'es'): Promise<Record<string, SiteContent>> => {
-  const { data, error } = await supabase
-    .from('site_content')
-    .select('*')
-    .eq('section', section)
-    .eq('language', language)
+  try {
+    const { data, error } = await supabase
+      .from('site_content')
+      .select('*')
+      .eq('section', section)
+      .eq('language', language)
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching site content:', error)
+      return {}
+    }
+
+    const contentMap: Record<string, SiteContent> = {}
+    data?.forEach(item => {
+      contentMap[item.content_key] = item
+    })
+    return contentMap
+  } catch (error) {
     console.error('Error fetching site content:', error)
     return {}
   }
-
-  const contentMap: Record<string, SiteContent> = {}
-  data?.forEach(item => {
-    contentMap[item.content_key] = item
-  })
-  return contentMap
 }
 
 // =====================================================
@@ -188,59 +218,74 @@ export const getSiteContent = async (section: string, language: string = 'es'): 
 // =====================================================
 
 export const getCMSImages = async (section?: string): Promise<CMSImage[]> => {
-  let query = supabase
-    .from('cms_images')
-    .select('*')
-    .eq('is_active', true)
-    .order('position', { ascending: true })
+  try {
+    let query = supabase
+      .from('cms_images')
+      .select('*')
+      .eq('is_active', true)
+      .order('position', { ascending: true })
 
-  if (section) {
-    query = query.eq('section', section)
-  }
+    if (section) {
+      query = query.eq('section', section)
+    }
 
-  const { data, error } = await query
+    const { data, error } = await query
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching CMS images:', error)
+      return []
+    }
+    return data || []
+  } catch (error) {
     console.error('Error fetching CMS images:', error)
     return []
   }
-  return data || []
 }
 
 export const getCMSImagesBySection = async (): Promise<Record<string, CMSImage[]>> => {
-  const { data, error } = await supabase
-    .from('cms_images')
-    .select('*')
-    .order('section', { ascending: true })
-    .order('position', { ascending: true })
+  try {
+    const { data, error } = await supabase
+      .from('cms_images')
+      .select('*')
+      .order('section', { ascending: true })
+      .order('position', { ascending: true })
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching CMS images:', error)
+      return {}
+    }
+
+    const grouped: Record<string, CMSImage[]> = {}
+    data?.forEach(img => {
+      if (!grouped[img.section]) {
+        grouped[img.section] = []
+      }
+      grouped[img.section].push(img)
+    })
+    return grouped
+  } catch (error) {
     console.error('Error fetching CMS images:', error)
     return {}
   }
-
-  const grouped: Record<string, CMSImage[]> = {}
-  data?.forEach(img => {
-    if (!grouped[img.section]) {
-      grouped[img.section] = []
-    }
-    grouped[img.section].push(img)
-  })
-  return grouped
 }
 
 export const getAllCMSImages = async (): Promise<CMSImage[]> => {
-  const { data, error } = await supabase
-    .from('cms_images')
-    .select('*')
-    .order('section', { ascending: true })
-    .order('position', { ascending: true })
+  try {
+    const { data, error } = await supabase
+      .from('cms_images')
+      .select('*')
+      .order('section', { ascending: true })
+      .order('position', { ascending: true })
 
-  if (error) {
+    if (error) {
+      console.error('Error fetching all CMS images:', error)
+      return []
+    }
+    return data || []
+  } catch (error) {
     console.error('Error fetching all CMS images:', error)
     return []
   }
-  return data || []
 }
 
 export const updateCMSImage = async (id: string, updates: Partial<CMSImage>): Promise<boolean> => {

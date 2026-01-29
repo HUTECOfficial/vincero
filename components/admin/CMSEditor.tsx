@@ -833,100 +833,177 @@ export default function CMSEditor() {
           {products.length === 0 ? (
             <Card className="p-8 text-center neu-shadow border-0 bg-[#E0E5EC]">
               <Package className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No hay productos en el CMS. Los productos actuales están en el código.</p>
+              <p className="text-gray-500">No hay productos en el CMS.</p>
+              <p className="text-sm text-gray-400 mt-2">Ejecuta el script <code className="bg-gray-200 px-1 rounded">supabase-cms-products-sections.sql</code> para cargar los productos.</p>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.map((product) => (
-                <Card key={product.id} className="p-4 neu-shadow border-0 bg-[#E0E5EC]">
-                  <div className="flex gap-4">
-                    {/* Product Image */}
-                    <div className="relative group flex-shrink-0">
-                      <img
-                        src={product.main_image}
-                        alt={product.name_es}
-                        className="w-24 h-24 object-cover rounded-lg"
-                      />
-                      <button
-                        onClick={() => triggerUpload('products', product.id, 'main_image')}
-                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center"
-                      >
-                        <Upload className="w-5 h-5 text-white" />
-                      </button>
-                    </div>
+                <Card key={product.id} className="neu-shadow border-0 bg-[#E0E5EC] overflow-hidden">
+                  {/* Product Image Header */}
+                  <div className="relative group h-40 bg-gray-100">
+                    <img
+                      src={product.main_image}
+                      alt={product.name_es}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      onClick={() => triggerUpload('products', product.id, 'main_image')}
+                      className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    >
+                      <Upload className="w-6 h-6 text-white" />
+                      <span className="text-white text-sm ml-2">Cambiar imagen</span>
+                    </button>
+                    {product.badge_key && (
+                      <span className="absolute top-2 left-2 bg-[#D4AF37] text-white text-xs px-2 py-1 rounded-full">
+                        {product.badge_key}
+                      </span>
+                    )}
+                    <span className="absolute top-2 right-2 bg-white/90 text-gray-700 text-xs px-2 py-1 rounded-full">
+                      ID: {product.product_id}
+                    </span>
+                  </div>
 
-                    {/* Product Info */}
-                    <div className="flex-1">
-                      {editingProduct === product.id ? (
-                        <div className="space-y-2">
+                  {/* Product Info */}
+                  <div className="p-4">
+                    {editingProduct === product.id ? (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-xs text-gray-500">Nombre (Español)</label>
                           <input
                             type="text"
                             value={product.name_es}
                             onChange={(e) => updateProductLocal(product.id, 'name_es', e.target.value)}
-                            className="w-full px-2 py-1 rounded border border-gray-200 text-sm font-medium"
-                            placeholder="Nombre del producto"
+                            className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm"
                           />
-                          <div className="flex gap-2">
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-500">Nombre (Inglés)</label>
+                          <input
+                            type="text"
+                            value={product.name_en || ''}
+                            onChange={(e) => updateProductLocal(product.id, 'name_en', e.target.value)}
+                            className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-500">Descripción (Español)</label>
+                          <textarea
+                            value={product.description_es || ''}
+                            onChange={(e) => updateProductLocal(product.id, 'description_es', e.target.value)}
+                            className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm"
+                            rows={2}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs text-gray-500">Precio (centavos)</label>
                             <input
                               type="number"
-                              value={product.price / 100}
-                              onChange={(e) => updateProductLocal(product.id, 'price', parseFloat(e.target.value) * 100)}
-                              className="w-24 px-2 py-1 rounded border border-gray-200 text-sm"
-                              placeholder="Precio"
+                              value={product.price}
+                              onChange={(e) => updateProductLocal(product.id, 'price', parseInt(e.target.value))}
+                              className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm"
                             />
+                          </div>
+                          <div>
+                            <label className="text-xs text-gray-500">Color</label>
                             <input
                               type="text"
                               value={product.color || ''}
                               onChange={(e) => updateProductLocal(product.id, 'color', e.target.value)}
-                              className="flex-1 px-2 py-1 rounded border border-gray-200 text-sm"
-                              placeholder="Color"
+                              className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm"
                             />
                           </div>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              onClick={() => handleSaveProduct(product)}
-                              className="bg-green-500 hover:bg-green-600 text-white"
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs text-gray-500">Badge</label>
+                            <select
+                              value={product.badge_key || ''}
+                              onChange={(e) => updateProductLocal(product.id, 'badge_key', e.target.value || null)}
+                              className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm"
                             >
-                              <Check className="w-3 h-3 mr-1" />
-                              Guardar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setEditingProduct(null)}
+                              <option value="">Sin badge</option>
+                              <option value="mostPopular">Más Popular</option>
+                              <option value="favorite">Favorito</option>
+                              <option value="limitedEdition">Edición Limitada</option>
+                              <option value="classic">Clásico</option>
+                              <option value="newProduct">Nuevo</option>
+                              <option value="trending">Tendencia</option>
+                              <option value="popular">Popular</option>
+                              <option value="exclusive">Exclusivo</option>
+                              <option value="winterCollection">Otoño/Invierno</option>
+                              <option value="ballerina">Balerina</option>
+                              <option value="lightyear">Lightyear</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="text-xs text-gray-500">Tipo</label>
+                            <select
+                              value={product.description_type}
+                              onChange={(e) => updateProductLocal(product.id, 'description_type', e.target.value)}
+                              className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm"
                             >
-                              Cancelar
-                            </Button>
+                              <option value="normal">Normal (Low)</option>
+                              <option value="high">High</option>
+                              <option value="winter">Multicolor</option>
+                              <option value="ballerina">Balerina</option>
+                              <option value="lightyear">Lightyear</option>
+                            </select>
                           </div>
                         </div>
-                      ) : (
-                        <>
-                          <h4 className="font-medium text-gray-800">{product.name_es}</h4>
-                          <p className="text-[#D4AF37] font-semibold">${(product.price / 100).toFixed(0)} MXN</p>
-                          <p className="text-xs text-gray-500">{product.color}</p>
-                          <div className="flex gap-2 mt-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setEditingProduct(product.id)}
-                              className="neu-btn border-0 text-xs"
-                            >
-                              <Edit3 className="w-3 h-3 mr-1" />
-                              Editar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleDeleteProduct(product.id)}
-                              className="text-red-500 hover:bg-red-50 text-xs"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
+                        <div className="flex gap-2 pt-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleSaveProduct(product)}
+                            className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                          >
+                            <Check className="w-3 h-3 mr-1" />
+                            Guardar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingProduct(null)}
+                            className="flex-1"
+                          >
+                            Cancelar
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <h4 className="font-medium text-gray-800 text-sm leading-tight mb-1">{product.name_es}</h4>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-[#D4AF37] font-bold">${(product.price / 100).toFixed(0)} MXN</p>
+                          <div className="flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                            <span className="text-xs text-gray-500">{product.rating}</span>
                           </div>
-                        </>
-                      )}
-                    </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mb-1">Color: {product.color}</p>
+                        <p className="text-xs text-gray-400 mb-3">Tipo: {product.description_type}</p>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setEditingProduct(product.id)}
+                            className="flex-1 neu-btn border-0 text-xs"
+                          >
+                            <Edit3 className="w-3 h-3 mr-1" />
+                            Editar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="text-red-500 hover:bg-red-50 text-xs px-3"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </Card>
               ))}

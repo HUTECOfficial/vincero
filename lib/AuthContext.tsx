@@ -39,7 +39,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         getUserProfile(session.user.id)
           .then(setProfile)
-          .catch(console.error)
+          .catch(async (error) => {
+            console.error('Error fetching profile:', error)
+            // If profile doesn't exist, create it
+            if (error.code === 'PGRST116') {
+              try {
+                await supabase.from('users').insert({
+                  id: session.user.id,
+                  email: session.user.email || '',
+                  full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || '',
+                  phone: session.user.user_metadata?.phone || '',
+                })
+                const newProfile = await getUserProfile(session.user.id)
+                setProfile(newProfile)
+              } catch (createError) {
+                console.error('Error creating profile:', createError)
+                setProfile(null)
+              }
+            }
+          })
       }
       setLoading(false)
     })
@@ -52,9 +70,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           try {
             const userProfile = await getUserProfile(session.user.id)
             setProfile(userProfile)
-          } catch (error) {
+          } catch (error: any) {
             console.error('Error fetching profile:', error)
-            setProfile(null)
+            // If profile doesn't exist, create it
+            if (error.code === 'PGRST116') {
+              try {
+                await supabase.from('users').insert({
+                  id: session.user.id,
+                  email: session.user.email || '',
+                  full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || '',
+                  phone: session.user.user_metadata?.phone || '',
+                })
+                const newProfile = await getUserProfile(session.user.id)
+                setProfile(newProfile)
+              } catch (createError) {
+                console.error('Error creating profile:', createError)
+                setProfile(null)
+              }
+            } else {
+              setProfile(null)
+            }
           }
         } else {
           setProfile(null)

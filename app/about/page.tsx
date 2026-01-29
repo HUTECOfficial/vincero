@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Award, Lightbulb, Sparkles, Shield, HandHeart, Users, TrendingUp, Star } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
@@ -10,29 +9,6 @@ import Link from 'next/link'
 
 export default function AboutPage() {
   const { t } = useLanguage()
-  const [isVideoMuted, setIsVideoMuted] = useState(true)
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            video.play()
-          } else {
-            video.pause()
-          }
-        })
-      },
-      { threshold: 0.3 }
-    )
-
-    observer.observe(video)
-    return () => observer.disconnect()
-  }, [])
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -46,23 +22,51 @@ export default function AboutPage() {
         />
       </div>
 
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-background/95 via-background/80 to-transparent backdrop-blur-sm">
-        <nav className="container mx-auto px-4 md:px-6 py-4 md:py-6">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="hover:opacity-80 transition-opacity">
-              <LanguageSwitcher />
-            </Link>
-            
-            <div className="text-center flex items-center justify-center">
-              <Link href="/" className="bg-white/90 px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all">
-                <img src="/vincero LOGO.png" alt="Vincero Logo" className="h-12 md:h-16 w-auto" />
-              </Link>
-            </div>
-
-            <Link href="/shop" className="text-sm font-medium hover:text-primary transition-colors">
-              {t.bestSellers}
+      <header style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50
+      }}>
+        <nav style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0.75rem 1.5rem',
+          backgroundColor: '#E0E5EC',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+          transition: 'all 0.3s ease'
+        }}>
+          {/* Language Switcher - Left */}
+          <div style={{ flex: '0 0 auto' }}>
+            <LanguageSwitcher />
+          </div>
+          
+          {/* Logo - Center */}
+          <div style={{
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <Link href="/">
+              <img 
+                src="/vincero LOGO.png" 
+                alt="Vincero Logo" 
+                style={{
+                  height: '2rem',
+                  width: 'auto',
+                  cursor: 'pointer'
+                }}
+              />
             </Link>
           </div>
+
+          {/* Empty space for symmetry - Right */}
+          <div style={{ flex: '0 0 auto', width: '2.5rem' }}></div>
         </nav>
       </header>
 
@@ -158,46 +162,6 @@ export default function AboutPage() {
                 {t.visionContent}
               </p>
             </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Video Section - Nuestro Proceso */}
-      <section className="py-16 lg:py-24 bg-black">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {t.ourProcess}
-            </h2>
-          </div>
-          <div className="max-w-sm mx-auto">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-white/10 aspect-[9/16]">
-              <video 
-                ref={videoRef}
-                className="absolute inset-0 w-full h-full object-cover"
-                src="https://0gddlydndy5gh5pp.public.blob.vercel-storage.com/copy_7DC8A94A-AFAC-4E69-97A8-B0E2DF06B9E4.mp4"
-                loop
-                muted={isVideoMuted}
-                playsInline
-              />
-              <button
-                onClick={() => setIsVideoMuted(!isVideoMuted)}
-                className="absolute bottom-4 right-4 z-10 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
-              >
-                {isVideoMuted ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <line x1="23" y1="9" x2="17" y2="15"></line>
-                    <line x1="17" y1="9" x2="23" y2="15"></line>
-                  </svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                  </svg>
-                )}
-              </button>
-            </div>
           </div>
         </div>
       </section>

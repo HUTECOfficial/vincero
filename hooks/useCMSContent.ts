@@ -131,3 +131,91 @@ export function useCMSSection(sectionName: string) {
 
   return { section, loading }
 }
+
+// Hook específico para productos del CMS
+export function useCMSProducts() {
+  const [products, setProducts] = useState<CMSProduct[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const productsData = await getCMSProducts()
+        setProducts(productsData)
+      } catch (err) {
+        console.error('Error fetching CMS products:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  return { products, loading }
+}
+
+// Hook para obtener todas las secciones del CMS
+export function useCMSSections() {
+  const [sections, setSections] = useState<Record<string, CMSSection>>({})
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchSections = async () => {
+      try {
+        const sectionsData = await getCMSSections()
+        const sectionsMap: Record<string, CMSSection> = {}
+        sectionsData.forEach(section => {
+          sectionsMap[section.section_name] = section
+        })
+        setSections(sectionsMap)
+      } catch (err) {
+        console.error('Error fetching CMS sections:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSections()
+  }, [])
+
+  return { sections, loading }
+}
+
+// Función helper para convertir CMSProduct a formato de producto de la página
+export function convertCMSProductToPageProduct(cmsProduct: CMSProduct, language: 'es' | 'en' = 'es') {
+  return {
+    id: cmsProduct.product_id,
+    name: language === 'es' ? cmsProduct.name_es : (cmsProduct.name_en || cmsProduct.name_es),
+    description: language === 'es' ? cmsProduct.description_es : (cmsProduct.description_en || cmsProduct.description_es),
+    price: cmsProduct.price,
+    image: cmsProduct.main_image,
+    images: cmsProduct.gallery_images,
+    badge: cmsProduct.badge_key,
+    descriptionType: cmsProduct.description_type,
+    rating: cmsProduct.rating,
+    color: cmsProduct.color,
+    sizes: cmsProduct.sizes,
+    isActive: cmsProduct.is_active
+  }
+}
+
+// Función helper para obtener texto de sección según idioma
+export function getSectionText(
+  section: CMSSection | undefined, 
+  field: 'title' | 'subtitle' | 'content', 
+  language: 'es' | 'en' = 'es'
+): string {
+  if (!section) return ''
+  
+  if (field === 'title') {
+    return language === 'es' ? (section.title_es || '') : (section.title_en || section.title_es || '')
+  }
+  if (field === 'subtitle') {
+    return language === 'es' ? (section.subtitle_es || '') : (section.subtitle_en || section.subtitle_es || '')
+  }
+  if (field === 'content') {
+    return language === 'es' ? (section.content_es || '') : (section.content_en || section.content_es || '')
+  }
+  return ''
+}

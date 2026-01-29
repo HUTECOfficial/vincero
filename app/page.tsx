@@ -985,6 +985,45 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       
+      {/* Intro Video Overlay - Desktop only */}
+      {showIntroVideo && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: '100vw',
+          height: '100dvh',
+          backgroundColor: '#000',
+          zIndex: 9999,
+          overflow: 'hidden',
+          touchAction: 'none',
+          opacity: introVideoEnded ? 0 : 1,
+          transition: 'opacity 0.5s ease-out'
+        }}>
+          <video
+            ref={introVideoRef}
+            className="hidden md:block"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '100vw',
+              height: '100vh',
+              minWidth: '100%',
+              minHeight: '100%',
+              objectFit: 'cover'
+            }}
+            playsInline
+            muted
+            preload="auto"
+          >
+            <source src="https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_193233_d709af2e-e871-41f2-ba47-7cb4d1fa2880.mp4" type="video/mp4" />
+          </video>
+        </div>
+      )}
       
       <div className="min-h-screen bg-background relative">
       {/* Decorative Background Elements */}
