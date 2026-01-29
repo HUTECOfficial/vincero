@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { 
@@ -104,10 +104,10 @@ export default function CMSEditor() {
     }
   }
 
-  const showMessage = (type: 'success' | 'error', text: string) => {
+  const showMessage = useCallback((type: 'success' | 'error', text: string) => {
     setMessage({ type, text })
     setTimeout(() => setMessage(null), 3000)
-  }
+  }, [])
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -239,11 +239,11 @@ export default function CMSEditor() {
     }
   }
 
-  const updateHeroLocal = (id: string, field: string, value: any) => {
-    setHeroImages(heroImages.map(h => 
+  const updateHeroLocal = useCallback((id: string, field: string, value: any) => {
+    setHeroImages(prev => prev.map(h => 
       h.id === id ? { ...h, [field]: value } : h
     ))
-  }
+  }, [])
 
   // =====================================================
   // SECTIONS HANDLERS
@@ -272,11 +272,11 @@ export default function CMSEditor() {
     }
   }
 
-  const updateSectionLocal = (id: string, field: string, value: any) => {
-    setSections(sections.map(s => 
+  const updateSectionLocal = useCallback((id: string, field: string, value: any) => {
+    setSections(prev => prev.map(s => 
       s.id === id ? { ...s, [field]: value } : s
     ))
-  }
+  }, [])
 
   // =====================================================
   // PRODUCTS HANDLERS
@@ -352,11 +352,11 @@ export default function CMSEditor() {
     }
   }
 
-  const updateProductLocal = (id: string, field: string, value: any) => {
-    setProducts(products.map(p => 
+  const updateProductLocal = useCallback((id: string, field: string, value: any) => {
+    setProducts(prev => prev.map(p => 
       p.id === id ? { ...p, [field]: value } : p
     ))
-  }
+  }, [])
 
   // =====================================================
   // TESTIMONIALS HANDLERS
@@ -420,11 +420,11 @@ export default function CMSEditor() {
     }
   }
 
-  const updateTestimonialLocal = (id: string, field: string, value: any) => {
-    setTestimonials(testimonials.map(t => 
+  const updateTestimonialLocal = useCallback((id: string, field: string, value: any) => {
+    setTestimonials(prev => prev.map(t => 
       t.id === id ? { ...t, [field]: value } : t
     ))
-  }
+  }, [])
 
   // =====================================================
   // RENDER
