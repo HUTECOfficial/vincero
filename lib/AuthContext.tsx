@@ -71,7 +71,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email,
       password,
     })
-    if (error) throw error
+    if (error) {
+      // Check if it's an email not confirmed error
+      if (error.message.includes('Email not confirmed') || error.message.includes('email_not_confirmed')) {
+        throw new Error('Por favor confirma tu email antes de iniciar sesión. Revisa tu bandeja de entrada.')
+      }
+      throw error
+    }
     setUser(data.user)
   }
 
@@ -83,7 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: {
           full_name: fullName,
           phone: phone,
-        }
+        },
+        emailRedirectTo: `${window.location.origin}`
       }
     })
     
@@ -97,7 +104,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         full_name: fullName,
         phone: phone,
       })
-      setUser(data.user)
+      
+      // Only set user if email confirmation is not required
+      // If confirmation is required, user will be null until they confirm
+      if (data.session) {
+        setUser(data.user)
+      }
     }
   }
 

@@ -9,12 +9,13 @@ import { useLanguage } from '@/lib/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuth } from '@/lib/AuthContext'
 import { createOrder, getUserOrders, supabase } from '@/lib/supabase'
+import { useHeroImages } from '@/hooks/useCMSContent'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { trackEvent, trackProductView } from '@/lib/analytics'
 
 interface Product {
   id: number
-  nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName10' | 'productName11' | 'productName12' | 'productName13' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18'
+  nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName11' | 'productName12' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18'
   price: number
   image: string
   images?: string[]
@@ -130,16 +131,24 @@ export default function HomePage() {
   const [showIntroVideo, setShowIntroVideo] = useState(true)
   const [introVideoEnded, setIntroVideoEnded] = useState(false)
   const introVideoRef = useRef<HTMLVideoElement>(null)
-  const heroImagesDesktop = [
+  
+  // CMS Hero Images - loads from database, falls back to defaults
+  const { images: cmsHeroImages, loading: heroLoading } = useHeroImages()
+  
+  const defaultHeroDesktop = [
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportadahorizontal.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2horizontal.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada3horizontal.png'
   ]
-  const heroImagesMobile = [
+  const defaultHeroMobile = [
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2vertical.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada3vertical.png'
   ]
+  
+  // Use CMS images if available, otherwise use defaults
+  const heroImagesDesktop = cmsHeroImages.desktop.length > 0 ? cmsHeroImages.desktop : defaultHeroDesktop
+  const heroImagesMobile = cmsHeroImages.mobile.length > 0 ? cmsHeroImages.mobile : defaultHeroMobile
   
   const heroRef = useRef<HTMLDivElement>(null)
   const shopRef = useRef<HTMLDivElement>(null)
@@ -158,7 +167,6 @@ export default function HomePage() {
         '/1.png',
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel2.png',
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel3.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel4.png',
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel5.png',
       ],
       badgeKey: 'mostPopular',
@@ -309,23 +317,6 @@ export default function HomePage() {
       color: 'MULTICOLOR',
     },
     {
-      id: 10,
-      nameKey: 'productName10',
-      price: 32500,
-      image: '/19.png',
-      images: [
-        '/19.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%202.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%203.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/Balerina%20rosa%204.png',
-      ],
-      badgeKey: 'ballerina',
-      descriptionType: 'ballerina',
-      rating: 4.9,
-      color: 'ROSA',
-    },
-    {
       id: 11,
       nameKey: 'productName11',
       price: 32500,
@@ -358,23 +349,6 @@ export default function HomePage() {
       descriptionType: 'ballerina',
       rating: 4.9,
       color: 'ROJO',
-    },
-    {
-      id: 13,
-      nameKey: 'productName13',
-      price: 32500,
-      image: '/21.png',
-      images: [
-        '/21.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro1.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro2.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinanegro3.png',
-      ],
-      badgeKey: 'ballerina',
-      descriptionType: 'ballerina',
-      rating: 4.9,
-      color: 'NEGRO',
     },
     {
       id: 15,
@@ -434,7 +408,7 @@ export default function HomePage() {
       image: '/26.png',
       images: [
         '/26.png',
-        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa1.png',
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa2.png',
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa3.png',
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa4.png',
@@ -487,7 +461,7 @@ export default function HomePage() {
           return
         }
         await signUp(authEmail, authPassword, authName, authPhone)
-        setAuthSuccess(t.registerSuccess)
+        setAuthSuccess('¡Cuenta creada! Por favor revisa tu email y confirma tu cuenta para poder iniciar sesión.')
       }
       // Reset form
       setAuthEmail('')
@@ -496,7 +470,16 @@ export default function HomePage() {
       setAuthName('')
       setAuthPhone('')
     } catch (error: any) {
-      setAuthError(error.message || 'Error de autenticación')
+      // Provide more user-friendly error messages
+      let errorMessage = error.message || 'Error de autenticación'
+      
+      if (errorMessage.includes('Invalid login credentials')) {
+        errorMessage = 'Email o contraseña incorrectos. Si acabas de registrarte, confirma tu email primero.'
+      } else if (errorMessage.includes('User already registered')) {
+        errorMessage = 'Este email ya está registrado. Intenta iniciar sesión.'
+      }
+      
+      setAuthError(errorMessage)
     }
   }
 
@@ -1002,46 +985,6 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       
-      {/* Intro Video Overlay - Desktop and Mobile */}
-      {showIntroVideo && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100dvh',
-          backgroundColor: '#000',
-          zIndex: 9999,
-          overflow: 'hidden',
-          touchAction: 'none',
-          opacity: introVideoEnded ? 0 : 1,
-          transition: 'opacity 0.5s ease-out'
-        }}>
-          {/* Desktop Video */}
-          <video
-            ref={introVideoRef}
-            className="hidden md:block"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '100vw',
-              height: '100vh',
-              minWidth: '100%',
-              minHeight: '100%',
-              objectFit: 'cover'
-            }}
-            playsInline
-            muted
-            preload="auto"
-          >
-            <source src="https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_193233_d709af2e-e871-41f2-ba47-7cb4d1fa2880.mp4" type="video/mp4" />
-          </video>
-        </div>
-      )}
       
       <div className="min-h-screen bg-background relative">
       {/* Decorative Background Elements */}
@@ -2587,13 +2530,6 @@ export default function HomePage() {
                   <p className="text-lg text-muted-foreground leading-relaxed mb-6">
                     {t.qualityGuaranteeDesc}
                   </p>
-                </div>
-                <div className="relative h-48 rounded-xl overflow-hidden">
-                  <img
-                    src="/1.png"
-                    alt="Tenis Vincero Chocolate"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
                 </div>
               </div>
             </Card>

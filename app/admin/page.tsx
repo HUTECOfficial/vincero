@@ -27,8 +27,13 @@ import {
   MapPin,
   Smartphone,
   Monitor,
-  Globe
+  Globe,
+  Palette,
+  Lock,
+  Mail,
+  EyeOff
 } from 'lucide-react'
+import CMSEditor from '@/components/admin/CMSEditor'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/lib/AuthContext'
 import { useRouter } from 'next/navigation'
@@ -84,26 +89,18 @@ export default function AdminDashboard() {
     completedOrders: 0
   })
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'products' | 'analytics'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'products' | 'analytics' | 'cms'>('overview')
   const [dateFilter, setDateFilter] = useState<'today' | 'week' | 'month' | 'all'>('all')
   const [pageViews, setPageViews] = useState<PageView[]>([])
   const [deviceStats, setDeviceStats] = useState({ mobile: 0, desktop: 0, tablet: 0 })
 
   // Admin emails allowed
-  const adminEmails = ['admin@vincero.com', 'vincero@admin.com', 'hutec.ia@gmail.com']
+  const adminEmails = ['vinceroadmin@vincero.mx', 'admin@vincero.com', 'vincero@admin.com']
 
   useEffect(() => {
-    if (!user) {
-      router.push('/')
-      return
+    if (user && adminEmails.includes(user.email || '')) {
+      fetchDashboardData()
     }
-
-    if (!adminEmails.includes(user.email || '')) {
-      router.push('/')
-      return
-    }
-
-    fetchDashboardData()
   }, [user])
 
   const fetchDashboardData = async () => {
@@ -234,15 +231,121 @@ export default function AdminDashboard() {
     }
   }
 
+  // Login states
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+
+  const handleAdminLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoginError('')
+    setLoginLoading(true)
+    
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword
+      })
+      
+      if (error) throw error
+      
+      // Check if user is admin after login
+      const { data: { user: loggedUser } } = await supabase.auth.getUser()
+      if (loggedUser && !adminEmails.includes(loggedUser.email || '')) {
+        await supabase.auth.signOut()
+        setLoginError('Este correo no tiene permisos de administrador')
+      }
+    } catch (error: any) {
+      setLoginError(error.message || 'Error al iniciar sesión')
+    } finally {
+      setLoginLoading(false)
+    }
+  }
+
   if (!user || !adminEmails.includes(user.email || '')) {
     return (
-      <div className="min-h-screen bg-[#E0E5EC] flex items-center justify-center">
-        <Card className="p-8 neu-shadow text-center">
-          <h2 className="text-2xl font-bold text-gray-700 mb-4">Acceso Denegado</h2>
-          <p className="text-gray-500 mb-6">No tienes permisos para acceder al panel de administración.</p>
-          <Button onClick={() => router.push('/')} className="bg-[#D4AF37] hover:bg-[#B8962E] text-white">
-            Volver al Inicio
-          </Button>
+      <div className="min-h-screen bg-[#E0E5EC] flex items-center justify-center p-4">
+        <Card className="p-8 neu-shadow border-0 bg-[#E0E5EC] w-full max-w-md">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-[#D4AF37] tracking-wider mb-2">VINCERO</h1>
+            <p className="text-gray-500">Panel de Administración</p>
+          </div>
+          
+          <form onSubmit={handleAdminLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Correo electrónico</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+                  placeholder="vinceroadmin@vincero.mx"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">Contraseña</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
+                  placeholder="••••••••"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            {loginError && (
+              <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm">
+                {loginError}
+              </div>
+            )}
+
+            <Button 
+              type="submit" 
+              disabled={loginLoading}
+              className="w-full bg-[#D4AF37] hover:bg-[#B8962E] text-white py-3 rounded-xl font-medium"
+            >
+              {loginLoading ? (
+                <RefreshCw className="w-5 h-5 animate-spin mx-auto" />
+              ) : (
+                'Iniciar Sesión'
+              )}
+            </Button>
+          </form>
+
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <p className="text-xs text-gray-400 text-center">
+              Acceso exclusivo para administradores
+            </p>
+          </div>
+          
+          <div className="mt-4 text-center">
+            <Button 
+              variant="ghost" 
+              onClick={() => router.push('/')} 
+              className="text-gray-500 hover:text-[#D4AF37]"
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Volver al Inicio
+            </Button>
+          </div>
         </Card>
       </div>
     )
@@ -290,6 +393,7 @@ export default function AdminDashboard() {
             { id: 'orders', label: 'Órdenes', icon: ShoppingCart },
             { id: 'products', label: 'Productos', icon: Package },
             { id: 'analytics', label: 'Analíticas', icon: TrendingUp },
+            { id: 'cms', label: 'CMS', icon: Palette },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -728,6 +832,11 @@ export default function AdminDashboard() {
               </div>
             </Card>
           </div>
+        )}
+
+        {/* CMS Tab */}
+        {activeTab === 'cms' && (
+          <CMSEditor />
         )}
       </div>
     </div>
