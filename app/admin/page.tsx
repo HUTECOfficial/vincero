@@ -97,6 +97,7 @@ export default function AdminDashboard() {
   // Stripe data
   const [stripeData, setStripeData] = useState<any>(null)
   const [stripeLoading, setStripeLoading] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
 
   // Admin emails allowed
   const adminEmails = ['vinceroadmin@vincero.com.mx', 'admin@vincero.com', 'vincero@admin.com']
@@ -237,11 +238,17 @@ export default function AdminDashboard() {
   }
 
   const handleSignOut = async () => {
+    if (isSigningOut) return
+    
+    setIsSigningOut(true)
     try {
       await signOut()
-      router.push('/')
+      // Force full page reload to clear all state
+      window.location.href = '/'
     } catch (error) {
       console.error('Error signing out:', error)
+      alert('Error al cerrar sesión. Por favor intenta de nuevo.')
+      setIsSigningOut(false)
     }
   }
 

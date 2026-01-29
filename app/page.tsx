@@ -124,6 +124,7 @@ export default function HomePage() {
   const [resetEmail, setResetEmail] = useState('')
   const [userOrders, setUserOrders] = useState<any[]>([])
   const [loadingOrders, setLoadingOrders] = useState(false)
+  const [isSigningOut, setIsSigningOut] = useState(false)
   const [heroApi, setHeroApi] = useState<CarouselApi>()
   const [showHeaderLogo, setShowHeaderLogo] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -508,12 +509,20 @@ export default function HomePage() {
   }
 
   const handleSignOut = async () => {
+    if (isSigningOut) return
+    
+    setIsSigningOut(true)
     try {
       await signOut()
       setUserOrders([])
       setShowProfile(false)
+      // Force reload to clear all state
+      window.location.href = '/'
     } catch (error) {
       console.error('Error signing out:', error)
+      setAuthError('Error al cerrar sesión. Por favor intenta de nuevo.')
+    } finally {
+      setIsSigningOut(false)
     }
   }
 
@@ -2043,11 +2052,12 @@ export default function HomePage() {
                 <Button 
                   variant="outline"
                   onClick={handleSignOut}
-                  className="w-full py-5 md:py-6 text-base md:text-lg text-red-500 hover:text-red-600 hover:bg-red-50"
+                  disabled={isSigningOut}
+                  className="w-full py-5 md:py-6 text-base md:text-lg text-red-500 hover:text-red-600 hover:bg-red-50 disabled:opacity-50"
                   size="lg"
                 >
                   <LogOut className="w-5 h-5 mr-2" />
-                  {t.logout}
+                  {isSigningOut ? 'Cerrando sesión...' : t.logout}
                 </Button>
               </div>
             )}
