@@ -99,7 +99,7 @@ export default function AdminDashboard() {
   const [stripeLoading, setStripeLoading] = useState(false)
 
   // Admin emails allowed
-  const adminEmails = ['vinceroadmin@vincero.mx', 'admin@vincero.com', 'vincero@admin.com']
+  const adminEmails = ['vinceroadmin@vincero.com.mx', 'admin@vincero.com', 'vincero@admin.com']
 
   useEffect(() => {
     if (user && adminEmails.includes(user.email || '')) {
@@ -308,7 +308,7 @@ export default function AdminDashboard() {
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50"
-                  placeholder="vinceroadmin@vincero.mx"
+                  placeholder="vinceroadmin@vincero.com.mx"
                   required
                 />
               </div>

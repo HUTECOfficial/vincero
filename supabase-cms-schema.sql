@@ -112,7 +112,7 @@ CREATE OR REPLACE FUNCTION is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
   RETURN (
-    SELECT email IN ('admin@vincero.com', 'vincero@admin.com', 'hutec.ia@gmail.com')
+    SELECT email IN ('admin@vincero.com', 'vincero@admin.com', 'hutec.ia@gmail.com', 'vinceroadmin@vincero.com.mx')
     FROM auth.users
     WHERE id = auth.uid()
   );
