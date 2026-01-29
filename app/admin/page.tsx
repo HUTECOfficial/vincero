@@ -236,6 +236,15 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      router.push('/')
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
+
   const fetchStripeData = async () => {
     setStripeLoading(true)
     try {
@@ -400,7 +409,7 @@ export default function AdminDashboard() {
                 <Home className="w-5 h-5" />
               </button>
               <button 
-                onClick={() => signOut()}
+                onClick={handleSignOut}
                 className="p-2 rounded-xl neu-btn text-gray-600 hover:text-red-500 transition-colors"
               >
                 <LogOut className="w-5 h-5" />

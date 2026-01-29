@@ -511,6 +511,7 @@ export default function HomePage() {
     try {
       await signOut()
       setUserOrders([])
+      setShowProfile(false)
     } catch (error) {
       console.error('Error signing out:', error)
     }
