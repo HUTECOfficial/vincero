@@ -30,7 +30,6 @@ import {
   getCMSSections, 
   getCMSProducts,
   getCMSTestimonials,
-  getCMSImagesBySection,
   updateHeroImage,
   createHeroImage,
   deleteHeroImage,
@@ -41,19 +40,14 @@ import {
   updateCMSTestimonial,
   createCMSTestimonial,
   deleteCMSTestimonial,
-  updateCMSImage,
-  createCMSImage,
-  deleteCMSImage,
   uploadCMSImage,
-  reorderItems,
   type HeroImage,
   type CMSSection,
   type CMSProduct,
-  type CMSTestimonial,
-  type CMSImage
+  type CMSTestimonial
 } from '@/lib/cms'
 
-type CMSTab = 'hero' | 'images' | 'sections' | 'products' | 'testimonials'
+type CMSTab = 'hero' | 'sections' | 'products' | 'testimonials'
 
 export default function CMSEditor() {
   const [activeTab, setActiveTab] = useState<CMSTab>('hero')
@@ -66,7 +60,6 @@ export default function CMSEditor() {
   const [sections, setSections] = useState<CMSSection[]>([])
   const [products, setProducts] = useState<CMSProduct[]>([])
   const [testimonials, setTestimonials] = useState<CMSTestimonial[]>([])
-  const [allImages, setAllImages] = useState<Record<string, CMSImage[]>>({})
 
   // Edit states
   const [editingHero, setEditingHero] = useState<string | null>(null)
@@ -84,18 +77,16 @@ export default function CMSEditor() {
   const loadAllData = async () => {
     setLoading(true)
     try {
-      const [heroData, sectionsData, productsData, testimonialsData, imagesData] = await Promise.all([
+      const [heroData, sectionsData, productsData, testimonialsData] = await Promise.all([
         getHeroImages(),
         getCMSSections(),
         getCMSProducts(),
-        getCMSTestimonials(),
-        getCMSImagesBySection()
+        getCMSTestimonials()
       ])
       setHeroImages(heroData)
       setSections(sectionsData)
       setProducts(productsData)
       setTestimonials(testimonialsData)
-      setAllImages(imagesData)
     } catch (error) {
       console.error('Error loading CMS data:', error)
       showMessage('error', 'Error al cargar los datos')
@@ -151,16 +142,6 @@ export default function CMSEditor() {
         )
         setTestimonials(updated)
         await updateCMSTestimonial(uploadTarget.id, { [uploadTarget.field]: imageUrl } as any)
-      } else if (uploadTarget.type === 'cms_images') {
-        // Update CMS image
-        const section = uploadTarget.field // field contains the section name
-        const updatedSection = allImages[section]?.map(img => 
-          img.id === uploadTarget.id 
-            ? { ...img, image_url: imageUrl }
-            : img
-        ) || []
-        setAllImages({ ...allImages, [section]: updatedSection })
-        await updateCMSImage(uploadTarget.id, { image_url: imageUrl })
       }
 
       showMessage('success', 'Imagen subida correctamente')
@@ -486,7 +467,6 @@ export default function CMSEditor() {
       <div className="flex gap-2 overflow-x-auto pb-2">
         {[
           { id: 'hero', label: 'Hero/Banner', icon: ImageIcon },
-          { id: 'images', label: 'Todas las Imágenes', icon: Sparkles },
           { id: 'sections', label: 'Secciones', icon: Layout },
           { id: 'products', label: 'Productos', icon: Package },
           { id: 'testimonials', label: 'Testimonios', icon: MessageSquare },
@@ -1147,88 +1127,6 @@ export default function CMSEditor() {
         </div>
       )}
 
-      {/* All Images Tab */}
-      {activeTab === 'images' && (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700">Todas las Imágenes del Sitio</h3>
-              <p className="text-sm text-gray-500">Organizadas por sección. Haz clic en una imagen para cambiarla.</p>
-            </div>
-          </div>
-
-          {Object.keys(allImages).length === 0 ? (
-            <Card className="p-8 text-center neu-shadow border-0 bg-[#E0E5EC]">
-              <ImageIcon className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No hay imágenes en el CMS. Ejecuta el schema SQL para cargar las imágenes.</p>
-            </Card>
-          ) : (
-            Object.entries(allImages).map(([sectionName, images]) => (
-              <Card key={sectionName} className="p-4 neu-shadow border-0 bg-[#E0E5EC]">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-semibold text-gray-800 capitalize flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-[#D4AF37]"></span>
-                    {sectionName === 'general' ? 'General' : 
-                     sectionName === 'productos' ? 'Productos' :
-                     sectionName === 'features' ? 'Página Features' :
-                     sectionName === 'about' ? 'Página About' :
-                     sectionName === 'videos' ? 'Videos' :
-                     sectionName}
-                  </h4>
-                  <span className="text-xs text-gray-400">{images.length} imágenes</span>
-                </div>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                  {images.map((img) => (
-                    <div key={img.id} className="group relative">
-                      <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-transparent hover:border-[#D4AF37] transition-all">
-                        {img.image_url.includes('.mp4') ? (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-800 text-white text-xs">
-                            🎬 Video
-                          </div>
-                        ) : (
-                          <img
-                            src={img.image_url}
-                            alt={img.alt_text || img.image_key}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Error'
-                            }}
-                          />
-                        )}
-                        <button
-                          onClick={() => triggerUpload('cms_images', img.id, sectionName)}
-                          className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1"
-                        >
-                          <Upload className="w-6 h-6 text-white" />
-                          <span className="text-xs text-white">Cambiar</span>
-                        </button>
-                      </div>
-                      <div className="mt-1">
-                        <p className="text-xs font-medium text-gray-700 truncate">{img.description || img.image_key}</p>
-                        <p className="text-[10px] text-gray-400 truncate">{img.image_key}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            ))
-          )}
-
-          <Card className="p-4 neu-shadow border-0 bg-[#D4AF37]/10">
-            <div className="flex items-start gap-3">
-              <Sparkles className="w-5 h-5 text-[#D4AF37] mt-0.5" />
-              <div>
-                <p className="font-medium text-gray-800">Nota sobre las imágenes</p>
-                <p className="text-sm text-gray-600">
-                  Las imágenes se cargan desde la tabla <code className="bg-gray-200 px-1 rounded">cms_images</code> en Supabase. 
-                  Ejecuta el schema SQL (<code className="bg-gray-200 px-1 rounded">supabase-cms-schema.sql</code>) para poblar las imágenes iniciales.
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
     </div>
   )
 }
