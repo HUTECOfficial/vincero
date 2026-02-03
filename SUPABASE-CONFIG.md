@@ -1,5 +1,26 @@
 # Configuración de Supabase para Vincero
 
+## Configuración de Email de Confirmación
+
+### Flujo de Confirmación de Cuenta
+
+Cuando un usuario se registra, recibe un email de bienvenida con un botón "Confirmar mi Cuenta". El flujo es:
+
+1. Usuario hace clic en "Confirmar mi Cuenta"
+2. Supabase redirige a: `https://www.vincero.com.mx/auth/callback?token_hash=...&type=signup`
+3. La página `/auth/callback` procesa el token
+4. Redirige a `/auth/confirmed` mostrando mensaje de éxito
+5. Después de 3 segundos, redirige automáticamente a la página principal
+6. El usuario ya puede iniciar sesión con su cuenta verificada
+
+### Archivos del Sistema de Confirmación
+
+- `/app/auth/callback/route.ts` - Maneja el token de confirmación
+- `/app/auth/confirmed/page.tsx` - Página de éxito con mensaje visual
+- `/lib/AuthContext.tsx` - Configuración de `emailRedirectTo`
+
+---
+
 ## Problema: Reset Password redirige a localhost
 
 ### Solución: Configurar URLs en Supabase
@@ -20,8 +41,12 @@
    **Redirect URLs** (agregar todas estas):
    ```
    https://vincero.com.mx/**
+   https://www.vincero.com.mx/**
+   https://vincero.com.mx/auth/callback
+   https://www.vincero.com.mx/auth/callback
    https://vincero.com.mx/reset-password
    http://localhost:3000/** (solo para desarrollo)
+   http://localhost:3000/auth/callback (solo para desarrollo)
    ```
 
 3. **Configurar Email Templates**

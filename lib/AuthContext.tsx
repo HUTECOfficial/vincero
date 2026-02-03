@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           full_name: fullName,
           phone: phone,
         },
-        emailRedirectTo: process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/auth/callback`
       }
     })
     
