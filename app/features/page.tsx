@@ -7,11 +7,13 @@ import { ChevronRight, Zap, Shield, TrendingUp, Ruler, X } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { DynamicIsland } from '@/components/DynamicIsland'
+import { ProfileModal } from '@/components/ProfileModal'
 import Link from 'next/link'
 
 export default function FeaturesPage() {
   const { t } = useLanguage()
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -200,7 +202,13 @@ export default function FeaturesPage() {
       </footer>
 
       {/* Dynamic Island */}
-      <DynamicIsland activeNav="features" />
+      <DynamicIsland activeNav="features" onProfileClick={() => setIsProfileOpen(true)} />
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
 
       {/* Size Guide Modal */}
       {isSizeGuideOpen && (

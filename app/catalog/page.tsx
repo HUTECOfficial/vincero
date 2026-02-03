@@ -6,11 +6,13 @@ import { Ruler, X } from 'lucide-react'
 import { useLanguage } from '@/lib/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { DynamicIsland } from '@/components/DynamicIsland'
+import { ProfileModal } from '@/components/ProfileModal'
 import Link from 'next/link'
 
 export default function CatalogPage() {
   const { t } = useLanguage()
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -222,7 +224,13 @@ export default function CatalogPage() {
       </footer>
 
       {/* Dynamic Island */}
-      <DynamicIsland activeNav="catalog" />
+      <DynamicIsland activeNav="catalog" onProfileClick={() => setIsProfileOpen(true)} />
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
 
       {/* Size Guide Modal */}
       {isSizeGuideOpen && (

@@ -5,10 +5,13 @@ import { Award, Lightbulb, Sparkles, Shield, HandHeart, Users, TrendingUp, Star 
 import { useLanguage } from '@/lib/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { DynamicIsland } from '@/components/DynamicIsland'
+import { ProfileModal } from '@/components/ProfileModal'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function AboutPage() {
   const { t } = useLanguage()
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-background relative">
@@ -184,7 +187,13 @@ export default function AboutPage() {
       </footer>
 
       {/* Dynamic Island */}
-      <DynamicIsland activeNav="about" />
+      <DynamicIsland activeNav="about" onProfileClick={() => setIsProfileOpen(true)} />
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </div>
   )
 }

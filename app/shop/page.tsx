@@ -10,6 +10,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuth } from '@/lib/AuthContext'
 import { createOrder, getUserOrders } from '@/lib/supabase'
 import { DynamicIsland } from '@/components/DynamicIsland'
+import { ProfileModal } from '@/components/ProfileModal'
 import Link from 'next/link'
 
 interface Product {
@@ -47,6 +48,7 @@ function ShopContent() {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
   const [isStripeLoading, setIsStripeLoading] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   const products: Product[] = [
     {
@@ -1326,6 +1328,14 @@ function ShopContent() {
       {/* Dynamic Island */}
       <DynamicIsland 
         activeNav="shop"
+        wishlistCount={wishlist.length}
+        onProfileClick={() => setIsProfileOpen(true)}
+      />
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
         wishlistCount={wishlist.length}
       />
     </div>
