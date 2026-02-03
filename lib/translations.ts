@@ -27,6 +27,7 @@ export interface Translations {
   winterCollection: string
   ballerina: string
   lightyear: string
+  combat: string
   
   // Product descriptions
   productDesc: string
@@ -34,6 +35,7 @@ export interface Translations {
   productDescWinter: string
   productDescBallerina: string
   productDescLightyear: string
+  productDescCombat: string
   
   // Product names
   productName1: string
@@ -54,6 +56,9 @@ export interface Translations {
   productName16: string
   productName17: string
   productName18: string
+  productName19: string
+  productName20: string
+  productName21: string
   
   // Video section
   videoTitle: string
@@ -267,6 +272,7 @@ export const translations: Record<Language, Translations> = {
     winterCollection: 'Colección Otoño/Invierno',
     ballerina: 'Balerina',
     lightyear: 'Lightyear',
+    combat: 'Combat',
     
     // Product descriptions
     productDesc: 'Calzado deportivo-casual fabricado en textil para buena transpiración y flexibilidad. Interior textil suave al contacto con la piel. Suela de PVC con excelente tracción y durabilidad. Diseño moderno y funcional. Tallas 13mx a 17mx.',
@@ -274,6 +280,7 @@ export const translations: Record<Language, Translations> = {
     productDescWinter: 'Calzado deportivo de temporada otoño/invierno fabricado en textil para buena transpiración y flexibilidad. Interior textil suave al contacto con la piel. Suela de PVC con excelente tracción y durabilidad. Diseño moderno y funcional. Tallas 13mx a 17mx.',
     productDescBallerina: 'Calzado estilo balerina fabricado en textil suave y flexible. Interior acolchado para máxima comodidad. Suela de PVC con excelente tracción. Diseño elegante y femenino perfecto para cualquier ocasión. Tallas 13mx a 17mx.',
     productDescLightyear: 'Calzado deportivo inspirado en aventuras espaciales, fabricado en textil resistente y flexible. Interior acolchado para máximo confort. Suela de PVC con excelente tracción y durabilidad. Diseño moderno y dinámico perfecto para pequeños exploradores. Tallas 13mx a 17mx.',
+    productDescCombat: 'Tenis deportivo alto estilo Combat fabricado en textil resistente y transpirable. Diseño táctico moderno con detalles reforzados. Interior acolchado para máximo confort. Suela de PVC con excelente tracción y durabilidad. Perfecto para aventuras urbanas. Tallas 17mx a 21mx.',
     
     // Product names
     productName1: 'Tenis Deportivo Infantil ITALIA/CARAMEL',
@@ -294,6 +301,9 @@ export const translations: Record<Language, Translations> = {
     productName16: 'Tenis Lightyear Infantil V. BANDERA/BLANCO',
     productName17: 'Tenis Lightyear Infantil AZUL/BLANCO',
     productName18: 'Tenis Lightyear Infantil ROSA/BLANCO',
+    productName19: 'Tenis Combat Alto BLANCO',
+    productName20: 'Tenis Combat Alto CARAMEL',
+    productName21: 'Tenis Combat Alto OXFORD',
     
     // Video section
     videoTitle: 'Mira Nuestros',
@@ -506,6 +516,7 @@ export const translations: Record<Language, Translations> = {
     winterCollection: 'Fall/Winter Collection',
     ballerina: 'Balerina',
     lightyear: 'Lightyear',
+    combat: 'Combat',
     
     // Product descriptions
     productDesc: 'Sporty-casual footwear made of textile for excellent breathability and flexibility. Soft textile interior for skin comfort. PVC sole with great traction and durability. Modern and functional design. Sizes 13mx to 17mx.',
@@ -513,6 +524,7 @@ export const translations: Record<Language, Translations> = {
     productDescWinter: 'Fall/winter season sporty footwear made of textile for excellent breathability and flexibility. Soft textile interior for skin comfort. PVC sole with great traction and durability. Modern and functional design. Sizes 13mx to 17mx.',
     productDescBallerina: 'Balerina-style footwear made of soft and flexible textile. Cushioned interior for maximum comfort. PVC sole with excellent traction. Elegant and feminine design perfect for any occasion. Sizes 13mx to 17mx.',
     productDescLightyear: 'Sports footwear inspired by space adventures, made of durable and flexible textile. Cushioned interior for maximum comfort. PVC sole with excellent traction and durability. Modern and dynamic design perfect for little explorers. Sizes 13mx to 17mx.',
+    productDescCombat: 'High-top Combat-style sports sneakers made of durable and breathable textile. Modern tactical design with reinforced details. Cushioned interior for maximum comfort. PVC sole with excellent traction and durability. Perfect for urban adventures. Sizes 17mx to 21mx.',
     
     // Product names
     productName1: 'Kids Sport Sneakers ITALIA/CARAMEL',
@@ -533,6 +545,9 @@ export const translations: Record<Language, Translations> = {
     productName16: 'Kids Lightyear Sneakers V. FLAG/WHITE',
     productName17: 'Kids Lightyear Sneakers BLUE/WHITE',
     productName18: 'Kids Lightyear Sneakers PINK/WHITE',
+    productName19: 'High Combat Sneakers WHITE',
+    productName20: 'High Combat Sneakers CARAMEL',
+    productName21: 'High Combat Sneakers OXFORD',
     
     // Video section
     videoTitle: 'Watch Our',
@@ -745,6 +760,7 @@ export const translations: Record<Language, Translations> = {
     winterCollection: '가을/겨울 컬렉션',
     ballerina: '발레리나',
     lightyear: '라이트이어',
+    combat: '컴뱃',
     
     // Product descriptions
     productDesc: '통기성과 유연성이 뛰어난 섬유 소재의 스포츠-캐주얼 신발입니다. 피부에 부드러운 섬유 내부. 뛰어난 접지력과 내구성의 PVC 밑창. 현대적이고 기능적인 디자인. 사이즈 13mx ~ 17mx.',
@@ -752,6 +768,7 @@ export const translations: Record<Language, Translations> = {
     productDescWinter: '통기성과 유연성이 뛰어난 섬유 소재의 가을/겨울 시즌 스포츠 신발입니다. 피부에 부드러운 섬유 내부. 뛰어난 접지력과 내구성의 PVC 밑창. 현대적이고 기능적인 디자인. 사이즈 13mx ~ 17mx.',
     productDescBallerina: '부드럽고 유연한 섬유 소재의 발레리나 스타일 신발입니다. 최대한의 편안함을 위한 쿠션 내부. 뛰어난 접지력의 PVC 밑창. 모든 경우에 완벽한 우아하고 여성스러운 디자인. 사이즈 13mx ~ 17mx.',
     productDescLightyear: '우주 모험에서 영감을 받은 스포츠 신발로, 내구성과 유연성이 뛰어난 섬유 소재로 제작되었습니다. 최대한의 편안함을 위한 쿠션 내부. 뛰어난 접지력과 내구성의 PVC 밑창. 작은 탐험가들에게 완벽한 현대적이고 역동적인 디자인. 사이즈 13mx ~ 17mx.',
+    productDescCombat: '내구성과 통기성이 뛰어난 섬유 소재의 하이탑 컴뱃 스타일 스포츠 스니커즈입니다. 강화된 디테일의 현대적인 전술 디자인. 최대한의 편안함을 위한 쿠션 내부. 뛰어난 접지력과 내구성의 PVC 밑창. 도시 모험에 완벽합니다. 사이즈 17mx ~ 21mx.',
     
     // Product names
     productName1: '아동용 스포츠 스니커즈 ITALIA/CARAMEL',
@@ -772,6 +789,9 @@ export const translations: Record<Language, Translations> = {
     productName16: '아동용 라이트이어 스니커즈 V. 플래그/화이트',
     productName17: '아동용 라이트이어 스니커즈 블루/화이트',
     productName18: '아동용 라이트이어 스니커즈 핑크/화이트',
+    productName19: '하이 컴뱃 스니커즈 화이트',
+    productName20: '하이 컴뱃 스니커즈 카라멜',
+    productName21: '하이 컴뱃 스니커즈 옥스포드',
     
     // Video section
     videoTitle: '우리의',

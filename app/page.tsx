@@ -15,13 +15,12 @@ import { trackEvent, trackProductView } from '@/lib/analytics'
 
 interface Product {
   id: number
-  nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName11' | 'productName12' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18'
+  nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName11' | 'productName12' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18' | 'productName19' | 'productName20' | 'productName21'
   price: number
   image: string
   images?: string[]
-  combatImages?: string[]
-  badgeKey?: 'mostPopular' | 'favorite' | 'limitedEdition' | 'classic' | 'newProduct' | 'trending' | 'popular' | 'exclusive' | 'winterCollection' | 'ballerina' | 'lightyear'
-  descriptionType: 'normal' | 'high' | 'winter' | 'ballerina' | 'lightyear'
+  badgeKey?: 'mostPopular' | 'favorite' | 'limitedEdition' | 'classic' | 'newProduct' | 'trending' | 'popular' | 'exclusive' | 'winterCollection' | 'ballerina' | 'lightyear' | 'combat'
+  descriptionType: 'normal' | 'high' | 'winter' | 'ballerina' | 'lightyear' | 'combat'
   rating: number
   color: string
 }
@@ -111,7 +110,6 @@ export default function HomePage() {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
   const [isStripeLoading, setIsStripeLoading] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [showCombatVersion, setShowCombatVersion] = useState(false)
   
   // Auth states
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login')
@@ -236,9 +234,6 @@ export default function HomePage() {
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco3.png',
         'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/highblancotennis.png',
       ],
-      combatImages: [
-        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2.png',
-      ],
       badgeKey: 'newProduct',
       descriptionType: 'high',
       rating: 5.0,
@@ -255,9 +250,6 @@ export default function HomePage() {
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe2.png',
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe3.png',
         'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/highcafetennis.png',
-      ],
-      combatImages: [
-        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2(1).png',
       ],
       badgeKey: 'trending',
       descriptionType: 'high',
@@ -308,9 +300,6 @@ export default function HomePage() {
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris2.png',
         'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris3.png',
         'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/highgristennis.png',
-      ],
-      combatImages: [
-        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2(2).png.png',
       ],
       badgeKey: 'newProduct',
       descriptionType: 'high',
@@ -429,6 +418,45 @@ export default function HomePage() {
       rating: 4.9,
       color: 'ROSA/BLANCO',
     },
+    {
+      id: 19,
+      nameKey: 'productName19',
+      price: 32500,
+      image: 'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2.png',
+      images: [
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2.png',
+      ],
+      badgeKey: 'combat',
+      descriptionType: 'combat',
+      rating: 5.0,
+      color: 'BLANCO',
+    },
+    {
+      id: 20,
+      nameKey: 'productName20',
+      price: 32500,
+      image: 'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2(1).png',
+      images: [
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2(1).png',
+      ],
+      badgeKey: 'combat',
+      descriptionType: 'combat',
+      rating: 4.8,
+      color: 'CARAMEL',
+    },
+    {
+      id: 21,
+      nameKey: 'productName21',
+      price: 32500,
+      image: 'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2(2).png.png',
+      images: [
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2(2).png.png',
+      ],
+      badgeKey: 'combat',
+      descriptionType: 'combat',
+      rating: 4.9,
+      color: 'OXFORD',
+    },
   ]
 
   const getProductName = (product: Product) => t[product.nameKey]
@@ -437,6 +465,7 @@ export default function HomePage() {
     if (product.descriptionType === 'winter') return t.productDescWinter
     if (product.descriptionType === 'ballerina') return t.productDescBallerina
     if (product.descriptionType === 'lightyear') return t.productDescLightyear
+    if (product.descriptionType === 'combat') return t.productDescCombat
     return product.descriptionType === 'high' ? t.productDescHigh : t.productDesc
   }
 
@@ -445,10 +474,12 @@ export default function HomePage() {
   const availableSizesWinter = ['13mx', '14mx', '15mx', '16mx', '17mx']
   const availableSizesBallerina = ['13mx', '14mx', '15mx', '16mx', '17mx']
   const availableSizesLightyear = ['13mx', '14mx', '15mx', '16mx', '17mx']
+  const availableSizesCombat = ['17mx', '18mx', '19mx', '20mx', '21mx']
   const getAvailableSizes = (product: Product) => {
     if (product.descriptionType === 'winter') return availableSizesWinter
     if (product.descriptionType === 'ballerina') return availableSizesBallerina
     if (product.descriptionType === 'lightyear') return availableSizesLightyear
+    if (product.descriptionType === 'combat') return availableSizesCombat
     return product.descriptionType === 'high' ? availableSizesHigh : availableSizesNormal
   }
 
@@ -519,11 +550,12 @@ export default function HomePage() {
   }
 
   const handleSignOut = () => {
-    // Cerrar sesión de forma directa sin esperar
-    supabase.auth.signOut().finally(() => {
-      // Forzar recarga completa independientemente del resultado
-      window.location.href = '/'
-    })
+    // Cerrar sesión directamente sin esperar - evita timeout
+    supabase.auth.signOut()
+    // Limpiar localStorage de sesión
+    localStorage.removeItem('supabase.auth.token')
+    // Forzar recarga inmediata
+    window.location.href = '/'
   }
 
   const loadUserOrders = async (userId: string) => {
@@ -643,11 +675,33 @@ export default function HomePage() {
       return
     }
     
+    // Check if video was already shown today
+    const videoShownData = localStorage.getItem('introVideoShown')
+    if (videoShownData) {
+      try {
+        const { timestamp } = JSON.parse(videoShownData)
+        const now = Date.now()
+        const oneDayInMs = 24 * 60 * 60 * 1000
+        
+        // If less than 24 hours have passed, skip video
+        if (now - timestamp < oneDayInMs) {
+          setShowIntroVideo(false)
+          setIntroVideoEnded(true)
+          return
+        }
+      } catch (e) {
+        // If there's an error parsing, continue to show video
+        console.log('Error parsing video data:', e)
+      }
+    }
+    
     const video = introVideoRef.current
     if (!video) return
 
     const handleVideoEnd = () => {
       setIntroVideoEnded(true)
+      // Mark video as shown with current timestamp
+      localStorage.setItem('introVideoShown', JSON.stringify({ timestamp: Date.now() }))
       setTimeout(() => {
         setShowIntroVideo(false)
       }, 300)
@@ -736,7 +790,6 @@ export default function HomePage() {
   const openProductDetail = (product: Product) => {
     setProductDetailView(product)
     setSelectedImageIndex(0)
-    setShowCombatVersion(false)
     // Track product view
     trackProductView(product.id, getProductName(product))
     trackEvent('product_view', 'engagement', getProductName(product), product.price)
@@ -2270,34 +2323,6 @@ export default function HomePage() {
               <div className="grid md:grid-cols-2 gap-6 md:gap-8">
                 {/* Image Section */}
                 <div className="relative">
-                  {/* Version Toggle Button - Only show if product has combat images */}
-                  {productDetailView.combatImages && productDetailView.combatImages.length > 0 && (
-                    <div className="mb-4 flex gap-2">
-                      <Button
-                        variant={!showCombatVersion ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => {
-                          setShowCombatVersion(false)
-                          setSelectedImageIndex(0)
-                        }}
-                        className="flex-1"
-                      >
-                        Versión Normal
-                      </Button>
-                      <Button
-                        variant={showCombatVersion ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => {
-                          setShowCombatVersion(true)
-                          setSelectedImageIndex(0)
-                        }}
-                        className="flex-1"
-                      >
-                        Versión Combat
-                      </Button>
-                    </div>
-                  )}
-
                   <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-secondary/50 to-accent/20">
                     {getProductBadge(productDetailView) && (
                       <div className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
@@ -2305,23 +2330,16 @@ export default function HomePage() {
                       </div>
                     )}
                     <img
-                      src={
-                        showCombatVersion && productDetailView.combatImages && productDetailView.combatImages.length > 0
-                          ? productDetailView.combatImages[selectedImageIndex] || productDetailView.combatImages[0]
-                          : productDetailView.images && productDetailView.images.length > 0 
-                            ? productDetailView.images[selectedImageIndex] 
-                            : productDetailView.image || "/placeholder.svg"
-                      }
+                      src={productDetailView.images && productDetailView.images.length > 0 ? productDetailView.images[selectedImageIndex] : productDetailView.image || "/placeholder.svg"}
                       alt={getProductName(productDetailView)}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   
                   {/* Image Gallery Thumbnails */}
-                  {((showCombatVersion && productDetailView.combatImages && productDetailView.combatImages.length > 1) ||
-                    (!showCombatVersion && productDetailView.images && productDetailView.images.length > 1)) && (
+                  {productDetailView.images && productDetailView.images.length > 1 && (
                     <div className="mt-4 grid grid-cols-4 gap-2">
-                      {(showCombatVersion ? productDetailView.combatImages : productDetailView.images)?.map((img, index) => (
+                      {productDetailView.images.map((img, index) => (
                         <button
                           key={index}
                           onClick={() => setSelectedImageIndex(index)}
