@@ -547,6 +547,45 @@ export default function HomePage() {
     }
   }, [user])
 
+  // Listen for email confirmation event
+  useEffect(() => {
+    const handleEmailConfirmed = (event: CustomEvent) => {
+      const { type } = event.detail
+      setIsProfileOpen(true)
+      if (type === 'signup' || type === 'email') {
+        setAuthSuccess('¡Tu cuenta ha sido verificada exitosamente! 🎉 Ya puedes disfrutar de todos los beneficios.')
+      } else if (type === 'recovery') {
+        setAuthSuccess('¡Sesión iniciada! Ahora puedes cambiar tu contraseña.')
+      }
+    }
+
+    window.addEventListener('emailConfirmed', handleEmailConfirmed as EventListener)
+    return () => {
+      window.removeEventListener('emailConfirmed', handleEmailConfirmed as EventListener)
+    }
+  }, [])
+
+  // Handle URL hash errors on page load (expired tokens, etc.)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const error = hashParams.get('error')
+      const errorDescription = hashParams.get('error_description')
+      
+      if (error) {
+        setIsProfileOpen(true)
+        if (error === 'access_denied' && errorDescription?.includes('expired')) {
+          setAuthError('El enlace ha expirado. Por favor solicita uno nuevo.')
+          setAuthMode('login')
+        } else {
+          setAuthError(errorDescription || 'Error de autenticación')
+        }
+        // Clear hash from URL
+        window.history.replaceState(null, '', window.location.pathname)
+      }
+    }
+  }, [])
+
   // Pre-set carousel to third slide immediately when API is ready
   useEffect(() => {
     if (heroApi) {

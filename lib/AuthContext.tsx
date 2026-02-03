@@ -33,6 +33,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
+    // Handle hash fragments from Supabase auth (email confirmation, password reset)
+    const handleAuthHash = async () => {
+      if (typeof window !== 'undefined' && window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const accessToken = hashParams.get('access_token')
+        const refreshToken = hashParams.get('refresh_token')
+        const type = hashParams.get('type')
+        const error = hashParams.get('error')
+        const errorDescription = hashParams.get('error_description')
+
+        // Handle errors
+        if (error) {
+          console.error('Auth error:', error, errorDescription)
+          // Clear hash and show error
+          window.history.replaceState(null, '', window.location.pathname)
+          return
+        }
+
+        // Handle successful auth callback
+        if (accessToken && refreshToken) {
+          try {
+            const { data, error: sessionError } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            })
+
+            if (sessionError) {
+              console.error('Error setting session:', sessionError)
+            } else if (data.session) {
+              setUser(data.session.user)
+              // Clear hash from URL
+              window.history.replaceState(null, '', window.location.pathname)
+              
+              // Dispatch custom event to notify components
+              window.dispatchEvent(new CustomEvent('emailConfirmed', { 
+                detail: { type, user: data.session.user } 
+              }))
+            }
+          } catch (err) {
+            console.error('Error processing auth callback:', err)
+          }
+        }
+      }
+    }
+
+    handleAuthHash()
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -125,7 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           full_name: fullName,
           phone: phone,
         },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/auth/callback`
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || window.location.origin}`
       }
     })
     
