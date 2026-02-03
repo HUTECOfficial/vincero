@@ -551,9 +551,26 @@ export default function HomePage() {
 
   const handleSignOut = () => {
     // Cerrar sesión directamente sin esperar - evita timeout
-    supabase.auth.signOut()
-    // Limpiar localStorage de sesión
-    localStorage.removeItem('supabase.auth.token')
+    supabase.auth.signOut({ scope: 'global' })
+    
+    // Limpiar TODAS las claves de Supabase del localStorage
+    const keysToRemove: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+        keysToRemove.push(key)
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key))
+    
+    // Limpiar sessionStorage también
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i)
+      if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+        sessionStorage.removeItem(key)
+      }
+    }
+    
     // Forzar recarga inmediata
     window.location.href = '/'
   }
