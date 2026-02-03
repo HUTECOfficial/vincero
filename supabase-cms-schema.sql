@@ -261,12 +261,12 @@ ON CONFLICT (section, image_key) DO NOTHING;
 
 -- VIDEO INTRO
 INSERT INTO cms_images (section, image_key, image_url, alt_text, description, position) VALUES
-('videos', 'intro_video', 'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_193233_d709af2e-e871-41f2-ba47-7cb4d1fa2880.mp4', 'Video Intro', 'Video de introducción', 1)
+('videos', 'intro_video', 'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/videos/calzadorojo.mp4', 'Video Intro', 'Video de introducción', 1)
 ON CONFLICT (section, image_key) DO NOTHING;
 
 -- Insertar imágenes del hero por defecto
 INSERT INTO hero_images (position, image_url_desktop, image_url_mobile, alt_text, is_active) VALUES
-(0, 'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportadahorizontal.png', 'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada.png', 'Hero Image 1', true),
+(0, 'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/cms-images/correcto%20.png', 'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada.png', 'Hero Image 1', true),
 (1, 'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2horizontal.png', 'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2vertical.png', 'Hero Image 2', true),
 (2, 'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada3horizontal.png', 'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada3vertical.png', 'Hero Image 3', true)
 ON CONFLICT DO NOTHING;

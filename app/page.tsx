@@ -9,23 +9,21 @@ import { useLanguage } from '@/lib/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuth } from '@/lib/AuthContext'
 import { createOrder, getUserOrders, supabase } from '@/lib/supabase'
-import { useHeroImages, useCMSProducts } from '@/hooks/useCMSContent'
-import type { CMSProduct } from '@/lib/cms'
+import { useHeroImages } from '@/hooks/useCMSContent'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { trackEvent, trackProductView } from '@/lib/analytics'
 
 interface Product {
   id: number
-  name: string
-  description: string
+  nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName11' | 'productName12' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18'
   price: number
   image: string
   images?: string[]
-  badge?: string
-  descriptionType: string
+  combatImages?: string[]
+  badgeKey?: 'mostPopular' | 'favorite' | 'limitedEdition' | 'classic' | 'newProduct' | 'trending' | 'popular' | 'exclusive' | 'winterCollection' | 'ballerina' | 'lightyear'
+  descriptionType: 'normal' | 'high' | 'winter' | 'ballerina' | 'lightyear'
   rating: number
   color: string
-  sizes?: string[]
 }
 
 interface CartItem extends Product {
@@ -113,6 +111,7 @@ export default function HomePage() {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
   const [isStripeLoading, setIsStripeLoading] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [showCombatVersion, setShowCombatVersion] = useState(false)
   
   // Auth states
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login')
@@ -138,31 +137,13 @@ export default function HomePage() {
   // CMS Hero Images - loads from database, falls back to defaults
   const { images: cmsHeroImages, loading: heroLoading } = useHeroImages()
   
-  // CMS Products - loads from database
-  const { products: cmsProducts, loading: productsLoading } = useCMSProducts()
-  
-  // Convert CMS products to page format
-  const products: Product[] = cmsProducts.map(p => ({
-    id: p.product_id,
-    name: language === 'es' ? p.name_es : (p.name_en || p.name_es),
-    description: language === 'es' ? (p.description_es || '') : (p.description_en || p.description_es || ''),
-    price: p.price,
-    image: p.main_image,
-    images: p.gallery_images,
-    badge: p.badge_key || undefined,
-    descriptionType: p.description_type,
-    rating: p.rating,
-    color: p.color || '',
-    sizes: p.sizes
-  }))
-  
   const defaultHeroDesktop = [
-    'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportadahorizontal.png',
+    'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/cms-images/correcto%20.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2horizontal.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada3horizontal.png'
   ]
   const defaultHeroMobile = [
-    'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada.png',
+    'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/cms-images/correcto%20.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada2vertical.png',
     'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/imagenportada3vertical.png'
   ]
@@ -178,18 +159,297 @@ export default function HomePage() {
   const philosophyRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  // Helper functions for products - now use direct properties from CMS
-  const getProductName = (product: Product) => product.name
-  const getProductBadge = (product: Product) => product.badge ? t[product.badge as keyof typeof t] || product.badge : undefined
-  const getProductDescription = (product: Product) => product.description || t.productDesc
+  const products: Product[] = [
+    {
+      id: 1,
+      nameKey: 'productName1',
+      price: 32500,
+      image: '/1.png',
+      images: [
+        '/1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenniscaramel5.png',
+      ],
+      badgeKey: 'mostPopular',
+      descriptionType: 'normal',
+      rating: 4.9,
+      color: 'ITALIA/CARAMEL',
+    },
+    {
+      id: 2,
+      nameKey: 'productName2',
+      price: 32500,
+      image: '/2.png',
+      images: [
+        '/2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisrosa3.png',
+      ],
+      badgeKey: 'favorite',
+      descriptionType: 'normal',
+      rating: 5.0,
+      color: 'ROSA B./ BLANCO',
+    },
+    {
+      id: 3,
+      nameKey: 'productName3',
+      price: 32500,
+      image: '/3.png',
+      images: [
+        '/3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tennisgris3.png',
+      ],
+      badgeKey: 'limitedEdition',
+      descriptionType: 'normal',
+      rating: 4.8,
+      color: 'OXFORD /PLATA',
+    },
+    {
+      id: 4,
+      nameKey: 'productName4',
+      price: 32500,
+      image: '/4.png',
+      images: [
+        '/4.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/tenisblanco4.png',
+      ],
+      badgeKey: 'classic',
+      descriptionType: 'normal',
+      rating: 4.9,
+      color: 'BLANCO/ NEGRO',
+    },
+    {
+      id: 5,
+      nameKey: 'productName5',
+      price: 32500,
+      image: '/6.png?v=2',
+      images: [
+        '/6.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highblanco3.png',
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/highblancotennis.png',
+      ],
+      combatImages: [
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2.png',
+      ],
+      badgeKey: 'newProduct',
+      descriptionType: 'high',
+      rating: 5.0,
+      color: 'BLANCO',
+    },
+    {
+      id: 6,
+      nameKey: 'productName6',
+      price: 32500,
+      image: '/7.png?v=2',
+      images: [
+        '/7.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highcafe3.png',
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/highcafetennis.png',
+      ],
+      combatImages: [
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2(1).png',
+      ],
+      badgeKey: 'trending',
+      descriptionType: 'high',
+      rating: 4.8,
+      color: 'CARAMEL',
+    },
+    {
+      id: 7,
+      nameKey: 'productName7',
+      price: 32500,
+      image: '/8.png?v=2',
+      images: [
+        '/8.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highazul4.png',
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/highazultennis.png',
+      ],
+      badgeKey: 'popular',
+      descriptionType: 'high',
+      rating: 4.9,
+      color: 'MARINO',
+    },
+    {
+      id: 8,
+      nameKey: 'productName8',
+      price: 32500,
+      image: '/9.png?v=2',
+      images: [
+        '/9.png?v=2',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highnegro4.png',
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/highnegrotennis.png',
+      ],
+      badgeKey: 'exclusive',
+      descriptionType: 'high',
+      rating: 4.9,
+      color: 'NEGRO',
+    },
+    {
+      id: 14,
+      nameKey: 'productName14',
+      price: 32500,
+      image: '/22.png',
+      images: [
+        '/22.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/highgris3.png',
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/highgristennis.png',
+      ],
+      combatImages: [
+        'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/fotos/tennisversion2(2).png.png',
+      ],
+      badgeKey: 'newProduct',
+      descriptionType: 'high',
+      rating: 4.9,
+      color: 'OXFORD',
+    },
+    {
+      id: 9,
+      nameKey: 'productName9',
+      price: 32500,
+      image: '/13.png',
+      badgeKey: 'winterCollection',
+      descriptionType: 'winter',
+      rating: 4.9,
+      color: 'MULTICOLOR',
+    },
+    {
+      id: 11,
+      nameKey: 'productName11',
+      price: 32500,
+      image: '/18.png',
+      images: [
+        '/18.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagrisblanco.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinagris4.png',
+      ],
+      badgeKey: 'ballerina',
+      descriptionType: 'ballerina',
+      rating: 4.9,
+      color: 'NEGRO/BLANCO',
+    },
+    {
+      id: 12,
+      nameKey: 'productName12',
+      price: 32500,
+      image: '/20.png',
+      images: [
+        '/20.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/balerinarojo4.png',
+      ],
+      badgeKey: 'ballerina',
+      descriptionType: 'ballerina',
+      rating: 4.9,
+      color: 'ROJO',
+    },
+    {
+      id: 15,
+      nameKey: 'productName15',
+      price: 32500,
+      image: '/23.png',
+      images: [
+        '/23.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearnegro4.png',
+      ],
+      badgeKey: 'lightyear',
+      descriptionType: 'lightyear',
+      rating: 5.0,
+      color: 'NEGRO/BLANCO',
+    },
+    {
+      id: 16,
+      nameKey: 'productName16',
+      price: 32500,
+      image: '/24.png',
+      images: [
+        '/24.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearverdes2.png',
+      ],
+      badgeKey: 'lightyear',
+      descriptionType: 'lightyear',
+      rating: 4.9,
+      color: 'V. BANDERA/BLANCO',
+    },
+    {
+      id: 17,
+      nameKey: 'productName17',
+      price: 32500,
+      image: '/25.png',
+      images: [
+        '/25.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearazul4.png',
+      ],
+      badgeKey: 'lightyear',
+      descriptionType: 'lightyear',
+      rating: 4.9,
+      color: 'AZUL/BLANCO',
+    },
+    {
+      id: 18,
+      nameKey: 'productName18',
+      price: 32500,
+      image: '/26.png',
+      images: [
+        '/26.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa1.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa2.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa3.png',
+        'https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/fotos/lightyearrosa4.png',
+      ],
+      badgeKey: 'lightyear',
+      descriptionType: 'lightyear',
+      rating: 4.9,
+      color: 'ROSA/BLANCO',
+    },
+  ]
 
-  // Get available sizes from product or use defaults based on description type
+  const getProductName = (product: Product) => t[product.nameKey]
+  const getProductBadge = (product: Product) => product.badgeKey ? t[product.badgeKey] : undefined
+  const getProductDescription = (product: Product) => {
+    if (product.descriptionType === 'winter') return t.productDescWinter
+    if (product.descriptionType === 'ballerina') return t.productDescBallerina
+    if (product.descriptionType === 'lightyear') return t.productDescLightyear
+    return product.descriptionType === 'high' ? t.productDescHigh : t.productDesc
+  }
+
+  const availableSizesNormal = ['13mx', '14mx', '15mx', '16mx', '17mx']
+  const availableSizesHigh = ['17mx', '18mx', '19mx', '20mx', '21mx']
+  const availableSizesWinter = ['13mx', '14mx', '15mx', '16mx', '17mx']
+  const availableSizesBallerina = ['13mx', '14mx', '15mx', '16mx', '17mx']
+  const availableSizesLightyear = ['13mx', '14mx', '15mx', '16mx', '17mx']
   const getAvailableSizes = (product: Product) => {
-    if (product.sizes && product.sizes.length > 0) return product.sizes
-    if (product.descriptionType === 'winter') return ['13mx', '14mx', '15mx', '16mx', '17mx']
-    if (product.descriptionType === 'ballerina') return ['13mx', '14mx', '15mx', '16mx', '17mx']
-    if (product.descriptionType === 'lightyear') return ['13mx', '14mx', '15mx', '16mx', '17mx']
-    return product.descriptionType === 'high' ? ['17mx', '18mx', '19mx', '20mx', '21mx'] : ['13mx', '14mx', '15mx', '16mx', '17mx']
+    if (product.descriptionType === 'winter') return availableSizesWinter
+    if (product.descriptionType === 'ballerina') return availableSizesBallerina
+    if (product.descriptionType === 'lightyear') return availableSizesLightyear
+    return product.descriptionType === 'high' ? availableSizesHigh : availableSizesNormal
   }
 
   // Auth functions
@@ -476,6 +736,7 @@ export default function HomePage() {
   const openProductDetail = (product: Product) => {
     setProductDetailView(product)
     setSelectedImageIndex(0)
+    setShowCombatVersion(false)
     // Track product view
     trackProductView(product.id, getProductName(product))
     trackEvent('product_view', 'engagement', getProductName(product), product.price)
@@ -815,7 +1076,7 @@ export default function HomePage() {
             muted
             preload="auto"
           >
-            <source src="https://jwevnxyvrktqmzlgfzqj.supabase.co/storage/v1/object/public/videosuk/hf_20260122_193233_d709af2e-e871-41f2-ba47-7cb4d1fa2880.mp4" type="video/mp4" />
+            <source src="https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/videos/videorojo.mp4" type="video/mp4" />
           </video>
         </div>
       )}
@@ -2009,6 +2270,34 @@ export default function HomePage() {
               <div className="grid md:grid-cols-2 gap-6 md:gap-8">
                 {/* Image Section */}
                 <div className="relative">
+                  {/* Version Toggle Button - Only show if product has combat images */}
+                  {productDetailView.combatImages && productDetailView.combatImages.length > 0 && (
+                    <div className="mb-4 flex gap-2">
+                      <Button
+                        variant={!showCombatVersion ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => {
+                          setShowCombatVersion(false)
+                          setSelectedImageIndex(0)
+                        }}
+                        className="flex-1"
+                      >
+                        Versión Normal
+                      </Button>
+                      <Button
+                        variant={showCombatVersion ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => {
+                          setShowCombatVersion(true)
+                          setSelectedImageIndex(0)
+                        }}
+                        className="flex-1"
+                      >
+                        Versión Combat
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-secondary/50 to-accent/20">
                     {getProductBadge(productDetailView) && (
                       <div className="absolute top-4 left-4 z-10 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
@@ -2016,16 +2305,23 @@ export default function HomePage() {
                       </div>
                     )}
                     <img
-                      src={productDetailView.images && productDetailView.images.length > 0 ? productDetailView.images[selectedImageIndex] : productDetailView.image || "/placeholder.svg"}
+                      src={
+                        showCombatVersion && productDetailView.combatImages && productDetailView.combatImages.length > 0
+                          ? productDetailView.combatImages[selectedImageIndex] || productDetailView.combatImages[0]
+                          : productDetailView.images && productDetailView.images.length > 0 
+                            ? productDetailView.images[selectedImageIndex] 
+                            : productDetailView.image || "/placeholder.svg"
+                      }
                       alt={getProductName(productDetailView)}
                       className="w-full h-full object-cover"
                     />
                   </div>
                   
                   {/* Image Gallery Thumbnails */}
-                  {productDetailView.images && productDetailView.images.length > 1 && (
+                  {((showCombatVersion && productDetailView.combatImages && productDetailView.combatImages.length > 1) ||
+                    (!showCombatVersion && productDetailView.images && productDetailView.images.length > 1)) && (
                     <div className="mt-4 grid grid-cols-4 gap-2">
-                      {productDetailView.images.map((img, index) => (
+                      {(showCombatVersion ? productDetailView.combatImages : productDetailView.images)?.map((img, index) => (
                         <button
                           key={index}
                           onClick={() => setSelectedImageIndex(index)}
