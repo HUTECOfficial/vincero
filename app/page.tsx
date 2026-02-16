@@ -9,20 +9,25 @@ import { useLanguage } from '@/lib/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useAuth } from '@/lib/AuthContext'
 import { createOrder, getUserOrders, supabase } from '@/lib/supabase'
-import { useHeroImages } from '@/hooks/useCMSContent'
+import { useHeroImages, useCMSProducts } from '@/hooks/useCMSContent'
+import { getCMSProducts, type CMSProduct } from '@/lib/cms'
 import { AnalyticsTracker } from '@/components/AnalyticsTracker'
 import { trackEvent, trackProductView } from '@/lib/analytics'
 
 interface Product {
   id: number
-  nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName11' | 'productName12' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18' | 'productName19' | 'productName20' | 'productName21'
+  nameKey?: string
+  cmsName?: string
+  cmsDescription?: string
   price: number
   image: string
   images?: string[]
-  badgeKey?: 'mostPopular' | 'favorite' | 'limitedEdition' | 'classic' | 'newProduct' | 'trending' | 'popular' | 'exclusive' | 'winterCollection' | 'ballerina' | 'lightyear' | 'combat'
-  descriptionType: 'normal' | 'high' | 'winter' | 'ballerina' | 'lightyear' | 'combat'
+  badgeKey?: string
+  descriptionType: string
   rating: number
   color: string
+  sizes?: string[]
+  fromCMS?: boolean
 }
 
 interface CartItem extends Product {
@@ -110,6 +115,8 @@ export default function HomePage() {
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false)
   const [isStripeLoading, setIsStripeLoading] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [cmsProducts, setCmsProducts] = useState<Product[]>([])
+  const [cmsLoaded, setCmsLoaded] = useState(false)
   
   // Auth states
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login')
@@ -459,9 +466,17 @@ export default function HomePage() {
     },
   ]
 
-  const getProductName = (product: Product) => t[product.nameKey]
-  const getProductBadge = (product: Product) => product.badgeKey ? t[product.badgeKey] : undefined
+  const getProductName = (product: Product) => {
+    if (product.cmsName) return product.cmsName
+    if (product.nameKey && (t as any)[product.nameKey]) return (t as any)[product.nameKey]
+    return 'Producto'
+  }
+  const getProductBadge = (product: Product) => {
+    if (!product.badgeKey) return undefined
+    return (t as any)[product.badgeKey] || product.badgeKey
+  }
   const getProductDescription = (product: Product) => {
+    if (product.cmsDescription) return product.cmsDescription
     if (product.descriptionType === 'winter') return t.productDescWinter
     if (product.descriptionType === 'ballerina') return t.productDescBallerina
     if (product.descriptionType === 'lightyear') return t.productDescLightyear
@@ -476,6 +491,7 @@ export default function HomePage() {
   const availableSizesLightyear = ['13mx', '14mx', '15mx', '16mx', '17mx']
   const availableSizesCombat = ['17mx', '18mx', '19mx', '20mx', '21mx']
   const getAvailableSizes = (product: Product) => {
+    if (product.sizes && product.sizes.length > 0) return product.sizes
     if (product.descriptionType === 'winter') return availableSizesWinter
     if (product.descriptionType === 'ballerina') return availableSizesBallerina
     if (product.descriptionType === 'lightyear') return availableSizesLightyear
@@ -653,6 +669,58 @@ export default function HomePage() {
     }
   }, [heroApi])
 
+  // Load CMS products from Supabase
+  useEffect(() => {
+    const loadCMSProducts = async () => {
+      try {
+        const cmsData = await getCMSProducts()
+        if (cmsData && cmsData.length > 0) {
+          const converted: Product[] = cmsData.map(cp => ({
+            id: cp.product_id,
+            cmsName: language === 'es' ? cp.name_es : (cp.name_en || cp.name_es),
+            cmsDescription: language === 'es' ? (cp.description_es || undefined) : (cp.description_en || cp.description_es || undefined),
+            price: cp.price,
+            image: cp.main_image,
+            images: Array.isArray(cp.gallery_images) ? cp.gallery_images as string[] : [],
+            badgeKey: cp.badge_key || undefined,
+            descriptionType: cp.description_type || 'normal',
+            rating: cp.rating,
+            color: cp.color || '',
+            sizes: Array.isArray(cp.sizes) ? cp.sizes as string[] : [],
+            fromCMS: true,
+          }))
+          setCmsProducts(converted)
+        }
+      } catch (error) {
+        console.error('Error loading CMS products:', error)
+      } finally {
+        setCmsLoaded(true)
+      }
+    }
+    loadCMSProducts()
+  }, [language])
+
+  // Merge hardcoded products with CMS products
+  // CMS products override hardcoded ones by ID, and new CMS products are appended
+  const allProducts = (() => {
+    if (!cmsLoaded || cmsProducts.length === 0) return products
+    
+    const merged = [...products]
+    
+    cmsProducts.forEach(cmsProduct => {
+      const existingIndex = merged.findIndex(p => p.id === cmsProduct.id)
+      if (existingIndex >= 0) {
+        // Override hardcoded product with CMS data
+        merged[existingIndex] = { ...merged[existingIndex], ...cmsProduct }
+      } else {
+        // New product from CMS - append it
+        merged.push(cmsProduct)
+      }
+    })
+    
+    return merged
+  })()
+
   // Lock body scroll while intro video is playing
   useEffect(() => {
     if (showIntroVideo) {
@@ -817,25 +885,22 @@ export default function HomePage() {
   }
 
   const getFilteredProducts = () => {
-    if (!collectionFilter) return products
+    if (!collectionFilter) return allProducts
     
     if (collectionFilter === 'deportivo') {
-      // Productos 1-4: Tenis Deportivos Low
-      return products.filter(p => p.id >= 1 && p.id <= 4)
+      return allProducts.filter(p => p.descriptionType === 'normal')
     } else if (collectionFilter === 'alto') {
-      // Productos 5-8, 14: Tenis Deportivos High
-      return products.filter(p => (p.id >= 5 && p.id <= 8) || p.id === 14)
+      return allProducts.filter(p => p.descriptionType === 'high')
     } else if (collectionFilter === 'ballerina') {
-      // Productos 10-13: Colección Ballerina
-      return products.filter(p => p.id >= 10 && p.id <= 13)
+      return allProducts.filter(p => p.descriptionType === 'ballerina')
     } else if (collectionFilter === 'multicolor') {
-      // Producto 9: Colección Multicolor
-      return products.filter(p => p.id === 9)
+      return allProducts.filter(p => p.id === 9)
     } else if (collectionFilter === 'lightyear') {
-      // Productos 15-18: Colección Lightyear
-      return products.filter(p => p.id >= 15 && p.id <= 18)
+      return allProducts.filter(p => p.descriptionType === 'lightyear')
+    } else if (collectionFilter === 'combat') {
+      return allProducts.filter(p => p.descriptionType === 'combat')
     }
-    return products
+    return allProducts
   }
 
   const confirmAddToCart = () => {
@@ -1861,7 +1926,7 @@ export default function HomePage() {
                   <p className="text-sm text-muted-foreground mb-4">
                     {t.resultsFor} "{searchQuery}"
                   </p>
-                  {products
+                  {allProducts
                     .filter(product => 
                       getProductName(product).toLowerCase().includes(searchQuery.toLowerCase()) ||
                       getProductDescription(product).toLowerCase().includes(searchQuery.toLowerCase())
@@ -1890,7 +1955,7 @@ export default function HomePage() {
                         </div>
                       </div>
                     ))}
-                  {products.filter(product => 
+                  {allProducts.filter(product => 
                     getProductName(product).toLowerCase().includes(searchQuery.toLowerCase()) ||
                     getProductDescription(product).toLowerCase().includes(searchQuery.toLowerCase())
                   ).length === 0 && (
@@ -2572,7 +2637,7 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {products.map((product, index) => {
+            {allProducts.map((product, index) => {
               const isInWishlist = wishlist.some(item => item.id === product.id)
               return (
                 <Card 
@@ -2726,7 +2791,7 @@ export default function HomePage() {
             >
               <Carousel opts={{ align: "start", loop: true, duration: 20, skipSnaps: false }} className="w-full">
                 <CarouselContent className="-ml-0">
-                  {products.filter(p => p.id >= 1 && p.id <= 4).map((product) => (
+                  {allProducts.filter(p => p.descriptionType === 'normal').map((product) => (
                     <CarouselItem key={product.id} className="pl-0 basis-full">
                       <div className="relative" onClick={(e) => {
                         e.stopPropagation()
@@ -2758,7 +2823,7 @@ export default function HomePage() {
             >
               <Carousel opts={{ align: "start", loop: true, duration: 20, skipSnaps: false }} className="w-full">
                 <CarouselContent className="-ml-0">
-                  {products.filter(p => p.id >= 5 && p.id <= 8).map((product) => (
+                  {allProducts.filter(p => p.descriptionType === 'high').map((product) => (
                     <CarouselItem key={product.id} className="pl-0 basis-full">
                       <div className="relative" onClick={(e) => {
                         e.stopPropagation()
@@ -2790,7 +2855,7 @@ export default function HomePage() {
             >
               <Carousel opts={{ align: "start", loop: true, duration: 20, skipSnaps: false }} className="w-full">
                 <CarouselContent className="-ml-0">
-                  {products.filter(p => p.id >= 10 && p.id <= 13).map((product) => (
+                  {allProducts.filter(p => p.descriptionType === 'ballerina').map((product) => (
                     <CarouselItem key={product.id} className="pl-0 basis-full">
                       <div className="relative" onClick={(e) => {
                         e.stopPropagation()
@@ -2822,7 +2887,7 @@ export default function HomePage() {
             >
               <Carousel opts={{ align: "start", loop: true, duration: 20, skipSnaps: false }} className="w-full">
                 <CarouselContent className="-ml-0">
-                  {products.filter(p => p.id === 9).map((product) => (
+                  {allProducts.filter(p => p.id === 9).map((product) => (
                     <CarouselItem key={product.id} className="pl-0 basis-full">
                       <div className="relative" onClick={(e) => {
                         e.stopPropagation()
@@ -2854,7 +2919,7 @@ export default function HomePage() {
             >
               <Carousel opts={{ align: "start", loop: true, duration: 20, skipSnaps: false }} className="w-full">
                 <CarouselContent className="-ml-0">
-                  {products.filter(p => p.id >= 15 && p.id <= 18).map((product) => (
+                  {allProducts.filter(p => p.descriptionType === 'lightyear').map((product) => (
                     <CarouselItem key={product.id} className="pl-0 basis-full">
                       <div className="relative" onClick={(e) => {
                         e.stopPropagation()
