@@ -1,7 +1,20 @@
 -- Script para inicializar las tablas del CMS en Supabase
 -- Ejecuta este script en el SQL Editor de Supabase
 
--- 1. Crear tabla cms_sections si no existe
+-- 1. Crear tabla hero_images si no existe
+CREATE TABLE IF NOT EXISTS hero_images (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  position INTEGER DEFAULT 0,
+  image_url_desktop TEXT NOT NULL,
+  image_url_mobile TEXT,
+  alt_text TEXT,
+  link_url TEXT,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2. Crear tabla cms_sections si no existe
 CREATE TABLE IF NOT EXISTS cms_sections (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   section_name TEXT UNIQUE NOT NULL,
@@ -19,7 +32,7 @@ CREATE TABLE IF NOT EXISTS cms_sections (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. Crear tabla cms_products si no existe
+-- 3. Crear tabla cms_products si no existe
 CREATE TABLE IF NOT EXISTS cms_products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id INTEGER UNIQUE NOT NULL,
@@ -41,7 +54,7 @@ CREATE TABLE IF NOT EXISTS cms_products (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Crear tabla cms_testimonials si no existe
+-- 4. Crear tabla cms_testimonials si no existe
 CREATE TABLE IF NOT EXISTS cms_testimonials (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   author_name TEXT NOT NULL,
@@ -55,7 +68,7 @@ CREATE TABLE IF NOT EXISTS cms_testimonials (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Insertar datos iniciales en cms_sections (solo si está vacía)
+-- 5. Insertar datos iniciales en cms_sections (solo si está vacía)
 INSERT INTO cms_sections (section_name, title_es, title_en, is_active)
 SELECT 'hero', 'Bienvenido a VINCERO', 'Welcome to VINCERO', true
 WHERE NOT EXISTS (SELECT 1 FROM cms_sections WHERE section_name = 'hero');
@@ -64,7 +77,7 @@ INSERT INTO cms_sections (section_name, title_es, title_en, is_active)
 SELECT 'about', 'Sobre Nosotros', 'About Us', true
 WHERE NOT EXISTS (SELECT 1 FROM cms_sections WHERE section_name = 'about');
 
--- 5. Insertar productos Combat en cms_products
+-- 6. Insertar productos Combat en cms_products
 INSERT INTO cms_products (
   product_id, name_es, name_en, description_es, description_en, 
   price, main_image, gallery_images, badge_key, description_type, 
@@ -137,7 +150,7 @@ ON CONFLICT (product_id) DO UPDATE SET
   sizes = EXCLUDED.sizes,
   updated_at = NOW();
 
--- 6. Insertar un testimonio de ejemplo si la tabla está vacía
+-- 7. Insertar un testimonio de ejemplo si la tabla está vacía
 INSERT INTO cms_testimonials (author_name, content_es, content_en, rating, is_active, position)
 SELECT 
   'Cliente Satisfecho',
@@ -148,7 +161,8 @@ SELECT
   0
 WHERE NOT EXISTS (SELECT 1 FROM cms_testimonials);
 
--- 7. Crear índices para mejorar el rendimiento
+-- 8. Crear índices para mejorar el rendimiento
+CREATE INDEX IF NOT EXISTS idx_hero_images_active ON hero_images(is_active, position);
 CREATE INDEX IF NOT EXISTS idx_cms_products_active ON cms_products(is_active, position);
 CREATE INDEX IF NOT EXISTS idx_cms_testimonials_active ON cms_testimonials(is_active, position);
 CREATE INDEX IF NOT EXISTS idx_cms_sections_active ON cms_sections(is_active);
