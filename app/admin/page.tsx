@@ -104,7 +104,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (user && adminEmails.includes(user.email || '')) {
       fetchDashboardData()
-      fetchStripeData()
     }
   }, [user])
 
@@ -246,12 +245,22 @@ export default function AdminDashboard() {
   const fetchStripeData = async () => {
     setStripeLoading(true)
     try {
-      const response = await fetch('/api/admin/stripe')
-      if (!response.ok) throw new Error('Error fetching Stripe data')
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 15000)
+      const response = await fetch('/api/admin/stripe', { signal: controller.signal })
+      clearTimeout(timeoutId)
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}))
+        throw new Error(errData.error || 'Error fetching Stripe data')
+      }
       const data = await response.json()
       setStripeData(data)
-    } catch (error) {
-      console.error('Error fetching Stripe data:', error)
+    } catch (error: any) {
+      if (error?.name === 'AbortError') {
+        console.warn('Stripe fetch timeout')
+      } else {
+        console.error('Error fetching Stripe data:', error?.message || error)
+      }
     } finally {
       setStripeLoading(false)
     }
