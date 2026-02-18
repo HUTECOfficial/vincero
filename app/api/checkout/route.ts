@@ -20,11 +20,12 @@ export async function POST(request: NextRequest) {
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = []
 
     for (const item of items) {
-      const priceId = getStripePriceId(item.id)
+      // Use stripe_price_id from CMS product if available, otherwise fall back to static mapping
+      const priceId = item.stripe_price_id || getStripePriceId(item.id)
       
       if (!priceId) {
         return NextResponse.json(
-          { error: `Product ${item.id} not found in Stripe` },
+          { error: `Product ${item.id} not found in Stripe. Please add a Stripe Price ID in the CMS.` },
           { status: 400 }
         )
       }

@@ -290,6 +290,8 @@ export default function CMSEditor() {
         gallery_images: product.gallery_images,
         badge_key: product.badge_key,
         color: product.color,
+        description_type: product.description_type,
+        stripe_price_id: (product as any).stripe_price_id || null,
         is_active: product.is_active
       })
       showMessage('success', 'Producto guardado correctamente')
@@ -318,6 +320,7 @@ export default function CMSEditor() {
         rating: 5.0,
         color: 'Color',
         sizes: ['13mx', '14mx', '15mx', '16mx', '17mx'],
+        stripe_price_id: null,
         is_active: true,
         position: products.length
       })
@@ -943,8 +946,20 @@ export default function CMSEditor() {
                               <option value="winter">Multicolor</option>
                               <option value="ballerina">Balerina</option>
                               <option value="lightyear">Lightyear</option>
+                              <option value="combat">Combat</option>
                             </select>
                           </div>
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-500 font-semibold text-orange-600">⚡ Stripe Price ID</label>
+                          <input
+                            type="text"
+                            value={(product as any).stripe_price_id || ''}
+                            onChange={(e) => updateProductLocal(product.id, 'stripe_price_id', e.target.value || null)}
+                            className="w-full px-2 py-1.5 rounded border border-orange-300 text-sm bg-orange-50"
+                            placeholder="price_1Abc123... (de tu dashboard de Stripe)"
+                          />
+                          <p className="text-xs text-gray-400 mt-0.5">Copia el Price ID de Stripe Dashboard → Products → tu producto → Price ID</p>
                         </div>
                         <div className="flex gap-2 pt-2">
                           <Button
@@ -976,7 +991,13 @@ export default function CMSEditor() {
                           </div>
                         </div>
                         <p className="text-xs text-gray-500 mb-1">Color: {product.color}</p>
-                        <p className="text-xs text-gray-400 mb-3">Tipo: {product.description_type}</p>
+                        <p className="text-xs text-gray-400">Tipo: {product.description_type}</p>
+                        <p className="text-xs mb-3">
+                          {(product as any).stripe_price_id 
+                            ? <span className="text-green-600">✓ Stripe vinculado</span>
+                            : <span className="text-red-400">⚠ Sin Stripe Price ID</span>
+                          }
+                        </p>
                         <div className="flex gap-2">
                           <Button
                             size="sm"

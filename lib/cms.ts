@@ -55,6 +55,7 @@ export interface CMSProduct {
   rating: number
   color: string | null
   sizes: string[]
+  stripe_price_id: string | null
   is_active: boolean
   position: number
   created_at: string

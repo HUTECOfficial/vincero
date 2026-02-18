@@ -27,6 +27,7 @@ interface Product {
   rating: number
   color: string
   sizes?: string[]
+  stripe_price_id?: string | null
   fromCMS?: boolean
 }
 
@@ -687,6 +688,7 @@ export default function HomePage() {
             rating: cp.rating,
             color: cp.color || '',
             sizes: Array.isArray(cp.sizes) ? cp.sizes as string[] : [],
+            stripe_price_id: cp.stripe_price_id || null,
             fromCMS: true,
           }))
           setCmsProducts(converted)
