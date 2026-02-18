@@ -384,28 +384,60 @@ export const updateCMSSection = async (id: string, updates: Partial<CMSSection>)
 }
 
 export const updateCMSProduct = async (id: string, updates: Partial<CMSProduct>): Promise<boolean> => {
-  const { error } = await supabase
+  let { error } = await supabase
     .from('cms_products')
     .update(updates)
     .eq('id', id)
 
+  // If stripe_price_id column doesn't exist, retry without it
+  if (error && error.message?.includes('stripe_price_id')) {
+    const { stripe_price_id, ...safeUpdates } = updates as any
+    const result = await supabase
+      .from('cms_products')
+      .update(safeUpdates)
+      .eq('id', id)
+    error = result.error
+  }
+
   if (error) {
-    console.error('Error updating CMS product:', error)
+    console.error('Error updating CMS product:', JSON.stringify(error))
     return false
   }
   return true
 }
 
 export const createCMSProduct = async (product: Omit<CMSProduct, 'id' | 'created_at' | 'updated_at'>): Promise<CMSProduct | null> => {
-  const { data, error } = await supabase
+  // Build insert object without stripe_price_id first (column may not exist yet)
+  const { stripe_price_id, ...baseProduct } = product as any
+  
+  // Use a large random number to avoid UNIQUE conflicts on product_id
+  const insertData: any = {
+    ...baseProduct,
+    product_id: Math.floor(Math.random() * 900000) + 100000,
+  }
+
+  // Try with stripe_price_id first
+  let { data, error } = await supabase
     .from('cms_products')
-    .insert(product)
+    .insert({ ...insertData, stripe_price_id: stripe_price_id || null })
     .select()
     .single()
 
+  // If it fails (column doesn't exist), retry without stripe_price_id
+  if (error && error.message?.includes('stripe_price_id')) {
+    console.warn('stripe_price_id column not found, retrying without it')
+    const result = await supabase
+      .from('cms_products')
+      .insert(insertData)
+      .select()
+      .single()
+    data = result.data
+    error = result.error
+  }
+
   if (error) {
-    console.error('Error creating CMS product:', error)
-    return null
+    console.error('Error creating CMS product:', JSON.stringify(error))
+    throw new Error(error.message || JSON.stringify(error))
   }
   return data
 }

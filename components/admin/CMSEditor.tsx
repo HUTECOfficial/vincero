@@ -331,8 +331,8 @@ export default function CMSEditor() {
         setEditingProduct(newProduct.id)
         showMessage('success', 'Producto añadido')
       }
-    } catch (error) {
-      showMessage('error', 'Error al añadir producto')
+    } catch (error: any) {
+      showMessage('error', `Error: ${error?.message || JSON.stringify(error)}`)
     } finally {
       setSaving(false)
     }
