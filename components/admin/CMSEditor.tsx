@@ -69,6 +69,9 @@ export default function CMSEditor() {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploadTarget, setUploadTarget] = useState<{ type: string; id: string; field: string } | null>(null)
+  const [stripeSearchId, setStripeSearchId] = useState('')
+  const [stripeSearching, setStripeSearching] = useState(false)
+  const [newProductForm, setNewProductForm] = useState<any>(null)
 
   useEffect(() => {
     loadAllData()
@@ -172,6 +175,81 @@ export default function CMSEditor() {
   const triggerUpload = (type: string, id: string, field: string) => {
     setUploadTarget({ type, id, field })
     fileInputRef.current?.click()
+  }
+
+  const lookupStripeProduct = async (productId: string) => {
+    if (!productId.startsWith('prod_')) {
+      showMessage('error', 'El ID debe empezar con prod_ (ej: prod_TpU0No8suvCdsj)')
+      return
+    }
+    setStripeSearching(true)
+    try {
+      const res = await fetch(`/api/admin/stripe-product?id=${productId}`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setNewProductForm({
+        name_es: data.name || '',
+        name_en: data.name || '',
+        description_es: data.description || '',
+        description_en: data.description || '',
+        price: data.default_price?.unit_amount || 32500,
+        main_image: data.images?.[0] || 'https://via.placeholder.com/400x400?text=Producto',
+        stripe_price_id: data.default_price?.id || '',
+        stripe_product_id: productId,
+        color: '',
+        badge_key: null,
+        description_type: 'normal',
+        sizes: [],
+        gender: 'kids',
+      })
+      showMessage('success', `Producto encontrado: ${data.name}`)
+    } catch (error: any) {
+      showMessage('error', `No se encontró el producto: ${error.message}`)
+      setNewProductForm(null)
+    } finally {
+      setStripeSearching(false)
+    }
+  }
+
+  const handleCreateFromStripe = async () => {
+    if (!newProductForm) return
+    setSaving(true)
+    try {
+      const sizesMap: Record<string, string[]> = {
+        kids:   ['13mx','14mx','15mx','16mx','17mx','18mx'],
+        ladies: ['22mx','23mx','24mx','25mx','26mx'],
+        mens:   ['25mx','26mx','27mx','28mx','29mx','30mx'],
+      }
+      const newProduct = await createCMSProduct({
+        product_id: Math.floor(Math.random() * 900000) + 100000,
+        name_es: newProductForm.name_es,
+        name_en: newProductForm.name_en,
+        description_es: newProductForm.description_es,
+        description_en: newProductForm.description_en,
+        price: newProductForm.price,
+        main_image: newProductForm.main_image,
+        gallery_images: newProductForm.main_image ? [newProductForm.main_image] : [],
+        badge_key: newProductForm.badge_key,
+        description_type: newProductForm.description_type,
+        rating: 5.0,
+        color: newProductForm.color || '',
+        sizes: newProductForm.sizes.length > 0 ? newProductForm.sizes : sizesMap[newProductForm.gender] || sizesMap.kids,
+        stripe_price_id: newProductForm.stripe_price_id || null,
+        is_active: true,
+        position: products.length,
+      } as any)
+      if (newProduct) {
+        setProducts([...products, newProduct])
+        setEditingProduct(newProduct.id)
+        setNewProductForm(null)
+        setStripeSearchId('')
+        showMessage('success', '¡Producto creado y listo para editar!')
+      }
+    } catch (error: any) {
+      showMessage('error', `Error: ${error?.message}`)
+    } finally {
+      setSaving(false)
+    }
   }
 
   // =====================================================
@@ -816,24 +894,125 @@ export default function CMSEditor() {
       {/* Products Tab */}
       {activeTab === 'products' && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-gray-700">Productos del Catálogo</h3>
-            <Button onClick={handleAddProduct} className="bg-[#D4AF37] hover:bg-[#B8962E] text-white">
-              <Plus className="w-4 h-4 mr-2" />
-              Añadir Producto
-            </Button>
-          </div>
+          <h3 className="text-lg font-semibold text-gray-700">Productos del Catálogo</h3>
 
-          <p className="text-sm text-gray-500 bg-yellow-50 p-3 rounded-lg">
-            <Sparkles className="w-4 h-4 inline mr-2 text-yellow-600" />
-            Los productos que añadas aquí aparecerán en el catálogo de la tienda.
-          </p>
+          {/* Stripe Product Lookup */}
+          <Card className="p-4 neu-shadow border-0 bg-[#E0E5EC]">
+            <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+              Agregar producto desde Stripe
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={stripeSearchId}
+                onChange={(e) => setStripeSearchId(e.target.value)}
+                placeholder="Pega el Stripe Product ID: prod_XXXX..."
+                className="flex-1 px-3 py-2 rounded-lg border border-gray-300 text-sm"
+                onKeyDown={(e) => e.key === 'Enter' && lookupStripeProduct(stripeSearchId)}
+              />
+              <Button
+                onClick={() => lookupStripeProduct(stripeSearchId)}
+                disabled={stripeSearching || !stripeSearchId}
+                className="bg-[#D4AF37] hover:bg-[#B8962E] text-white"
+              >
+                {stripeSearching ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Buscar'}
+              </Button>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">Stripe Dashboard → Products → selecciona producto → copia el ID (empieza con prod_)</p>
+
+            {/* Preview after lookup */}
+            {newProductForm && (
+              <div className="mt-4 p-4 bg-white/60 rounded-xl space-y-3">
+                <div className="flex gap-4 items-start">
+                  {newProductForm.main_image && !newProductForm.main_image.includes('placeholder') && (
+                    <img src={newProductForm.main_image} alt="" className="w-20 h-20 object-cover rounded-lg" />
+                  )}
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800">{newProductForm.name_es}</p>
+                    <p className="text-sm text-[#D4AF37] font-bold">${(newProductForm.price / 100).toFixed(0)} MXN</p>
+                    <p className="text-xs text-green-600">✓ Price ID: {newProductForm.stripe_price_id}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500 font-medium">Nombre en español</label>
+                    <input
+                      type="text"
+                      value={newProductForm.name_es}
+                      onChange={(e) => setNewProductForm({ ...newProductForm, name_es: e.target.value })}
+                      className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm mt-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 font-medium">Color</label>
+                    <input
+                      type="text"
+                      value={newProductForm.color}
+                      onChange={(e) => setNewProductForm({ ...newProductForm, color: e.target.value })}
+                      className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm mt-1"
+                      placeholder="BLANCO, NEGRO, CARAMEL..."
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500 font-medium">Tipo de producto</label>
+                    <select
+                      value={newProductForm.description_type}
+                      onChange={(e) => setNewProductForm({ ...newProductForm, description_type: e.target.value })}
+                      className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm mt-1"
+                    >
+                      <option value="normal">Normal (Low)</option>
+                      <option value="high">High</option>
+                      <option value="winter">Multicolor</option>
+                      <option value="ballerina">Balerina</option>
+                      <option value="lightyear">Lightyear</option>
+                      <option value="combat">Combat</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 font-medium">¿Para quién?</label>
+                    <select
+                      value={newProductForm.gender}
+                      onChange={(e) => setNewProductForm({ ...newProductForm, gender: e.target.value, sizes: [] })}
+                      className="w-full px-2 py-1.5 rounded border border-gray-200 text-sm mt-1"
+                    >
+                      <option value="kids">Niños (13mx–18mx)</option>
+                      <option value="ladies">Dama (22mx–26mx)</option>
+                      <option value="mens">Caballero (25mx–30mx)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-1">
+                  <Button
+                    onClick={handleCreateFromStripe}
+                    disabled={saving}
+                    className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    {saving ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Check className="w-4 h-4 mr-2" />}
+                    Crear Producto
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => { setNewProductForm(null); setStripeSearchId('') }}
+                    className="px-4"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
 
           {products.length === 0 ? (
             <Card className="p-8 text-center neu-shadow border-0 bg-[#E0E5EC]">
               <Package className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No hay productos en el CMS.</p>
-              <p className="text-sm text-gray-400 mt-2">Ejecuta el script <code className="bg-gray-200 px-1 rounded">supabase-cms-products-sections.sql</code> para cargar los productos.</p>
+              <p className="text-gray-500">No hay productos en el CMS aún.</p>
+              <p className="text-sm text-gray-400 mt-2">Usa el buscador de arriba para agregar productos desde Stripe.</p>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
