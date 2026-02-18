@@ -193,7 +193,7 @@ export default function CMSEditor() {
         description_es: data.description || '',
         description_en: data.description || '',
         price: data.default_price?.unit_amount || 32500,
-        main_image: data.images?.[0] || 'https://via.placeholder.com/400x400?text=Producto',
+        main_image: data.images?.[0] || 'https://qhyuoiyamcxxjsznbiyt.supabase.co/storage/v1/object/public/cms-images/placeholder.png',
         stripe_price_id: data.default_price?.id || '',
         stripe_product_id: productId,
         color: '',
@@ -238,12 +238,18 @@ export default function CMSEditor() {
         is_active: true,
         position: products.length,
       } as any)
+      // Always close the form and reload regardless
+      setNewProductForm(null)
+      setStripeSearchId('')
       if (newProduct) {
-        setProducts([...products, newProduct])
+        setProducts(prev => [...prev, newProduct])
         setEditingProduct(newProduct.id)
-        setNewProductForm(null)
-        setStripeSearchId('')
-        showMessage('success', '¡Producto creado y listo para editar!')
+        showMessage('success', '¡Producto creado! Ahora puedes subir imágenes.')
+      } else {
+        // Reload from DB to get the created product
+        const refreshed = await getCMSProducts()
+        setProducts(refreshed)
+        showMessage('success', 'Producto creado correctamente')
       }
     } catch (error: any) {
       showMessage('error', `Error: ${error?.message}`)
