@@ -280,7 +280,7 @@ export default function CMSEditor() {
   const handleSaveProduct = async (product: CMSProduct) => {
     setSaving(true)
     try {
-      await updateCMSProduct(product.id, {
+      const baseUpdate: any = {
         name_es: product.name_es,
         name_en: product.name_en,
         description_es: product.description_es,
@@ -291,9 +291,12 @@ export default function CMSEditor() {
         badge_key: product.badge_key,
         color: product.color,
         description_type: product.description_type,
-        stripe_price_id: (product as any).stripe_price_id || null,
         is_active: product.is_active
-      })
+      }
+      if ((product as any).stripe_price_id !== undefined) {
+        baseUpdate.stripe_price_id = (product as any).stripe_price_id || null
+      }
+      await updateCMSProduct(product.id, baseUpdate)
       showMessage('success', 'Producto guardado correctamente')
       setEditingProduct(null)
     } catch (error) {
@@ -320,10 +323,9 @@ export default function CMSEditor() {
         rating: 5.0,
         color: 'Color',
         sizes: ['13mx', '14mx', '15mx', '16mx', '17mx'],
-        stripe_price_id: null,
         is_active: true,
         position: products.length
-      })
+      } as any)
       if (newProduct) {
         setProducts([...products, newProduct])
         setEditingProduct(newProduct.id)
