@@ -1,5 +1,13 @@
 import { supabase } from './supabase'
 
+// Helper: wraps a thenable (like Supabase query) with a timeout
+const withTimeout = <T>(thenable: PromiseLike<T>, ms = 8000): Promise<T> => {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`CMS query timeout after ${ms}ms`)), ms)
+  )
+  return Promise.race([Promise.resolve(thenable), timeout])
+}
+
 // =====================================================
 // TIPOS PARA EL CMS
 // =====================================================
@@ -97,17 +105,14 @@ export interface CMSImage {
 
 export const getHeroImages = async (): Promise<HeroImage[]> => {
   try {
-    const { data, error } = await supabase
-      .from('hero_images')
-      .select('*')
-      .eq('is_active', true)
-      .order('position', { ascending: true })
-
-    if (error) {
-      console.error('Error fetching hero images:', error)
+    const result = await withTimeout(
+      supabase.from('hero_images').select('*').eq('is_active', true).order('position', { ascending: true })
+    ) as { data: HeroImage[] | null; error: unknown }
+    if (result.error) {
+      console.error('Error fetching hero images:', result.error)
       return []
     }
-    return data || []
+    return result.data || []
   } catch (error) {
     console.error('Error fetching hero images:', error)
     return []
@@ -116,16 +121,14 @@ export const getHeroImages = async (): Promise<HeroImage[]> => {
 
 export const getCMSSections = async (): Promise<CMSSection[]> => {
   try {
-    const { data, error } = await supabase
-      .from('cms_sections')
-      .select('*')
-      .eq('is_active', true)
-
-    if (error) {
-      console.error('Error fetching CMS sections:', error)
+    const result = await withTimeout(
+      supabase.from('cms_sections').select('*').eq('is_active', true)
+    ) as { data: CMSSection[] | null; error: unknown }
+    if (result.error) {
+      console.error('Error fetching CMS sections:', result.error)
       return []
     }
-    return data || []
+    return result.data || []
   } catch (error) {
     console.error('Error fetching CMS sections:', error)
     return []
@@ -153,17 +156,14 @@ export const getCMSSection = async (sectionName: string): Promise<CMSSection | n
 
 export const getCMSProducts = async (): Promise<CMSProduct[]> => {
   try {
-    const { data, error } = await supabase
-      .from('cms_products')
-      .select('*')
-      .eq('is_active', true)
-      .order('position', { ascending: true })
-
-    if (error) {
-      console.error('Error fetching CMS products:', error)
+    const result = await withTimeout(
+      supabase.from('cms_products').select('*').eq('is_active', true).order('position', { ascending: true })
+    ) as { data: CMSProduct[] | null; error: unknown }
+    if (result.error) {
+      console.error('Error fetching CMS products:', result.error)
       return []
     }
-    return data || []
+    return result.data || []
   } catch (error) {
     console.error('Error fetching CMS products:', error)
     return []
@@ -172,17 +172,14 @@ export const getCMSProducts = async (): Promise<CMSProduct[]> => {
 
 export const getCMSTestimonials = async (): Promise<CMSTestimonial[]> => {
   try {
-    const { data, error } = await supabase
-      .from('cms_testimonials')
-      .select('*')
-      .eq('is_active', true)
-      .order('position', { ascending: true })
-
-    if (error) {
-      console.error('Error fetching CMS testimonials:', error)
+    const result = await withTimeout(
+      supabase.from('cms_testimonials').select('*').eq('is_active', true).order('position', { ascending: true })
+    ) as { data: CMSTestimonial[] | null; error: unknown }
+    if (result.error) {
+      console.error('Error fetching CMS testimonials:', result.error)
       return []
     }
-    return data || []
+    return result.data || []
   } catch (error) {
     console.error('Error fetching CMS testimonials:', error)
     return []
