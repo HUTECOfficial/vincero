@@ -134,6 +134,15 @@ export default function CMSEditor() {
         )
         setProducts(updated)
         await updateCMSProduct(uploadTarget.id, { [uploadTarget.field]: imageUrl } as any)
+      } else if (uploadTarget.type === 'product-gallery') {
+        // Append to gallery_images array
+        const product = products.find(p => p.id === uploadTarget.id)
+        const existing = Array.isArray(product?.gallery_images) ? product!.gallery_images as string[] : []
+        const newGallery = [...existing, imageUrl]
+        setProducts(prev => prev.map(p =>
+          p.id === uploadTarget.id ? { ...p, gallery_images: newGallery } : p
+        ))
+        await updateCMSProduct(uploadTarget.id, { gallery_images: newGallery } as any)
       } else if (uploadTarget.type === 'testimonials') {
         const updated = testimonials.map(t => 
           t.id === uploadTarget.id 
@@ -1131,6 +1140,47 @@ export default function CMSEditor() {
                           />
                           <p className="text-xs text-gray-400 mt-0.5">Copia el Price ID de Stripe Dashboard → Products → tu producto → Price ID</p>
                         </div>
+
+                        {/* Gallery Images */}
+                        <div>
+                          <label className="text-xs text-gray-500 font-semibold block mb-2">📸 Imágenes de galería</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {/* Existing gallery images */}
+                            {(Array.isArray(product.gallery_images) ? product.gallery_images : []).map((imgUrl: string, idx: number) => (
+                              <div key={idx} className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                                <img src={imgUrl} alt={`Galería ${idx + 1}`} className="w-full h-full object-cover" />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = [...(product.gallery_images as string[])]
+                                    updated.splice(idx, 1)
+                                    updateProductLocal(product.id, 'gallery_images', updated)
+                                  }}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                            {/* Empty placeholder slots (up to 6 total) */}
+                            {Array.from({ length: Math.max(0, 6 - (Array.isArray(product.gallery_images) ? product.gallery_images.length : 0)) }).map((_, idx) => (
+                              <button
+                                key={`slot-${idx}`}
+                                type="button"
+                                onClick={() => {
+                                  setUploadTarget({ type: 'product-gallery', id: product.id, field: 'gallery_images' })
+                                  fileInputRef.current?.click()
+                                }}
+                                className="aspect-square bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-[#D4AF37] hover:bg-yellow-50 transition-colors"
+                              >
+                                <Upload className="w-4 h-4 text-gray-400" />
+                                <span className="text-xs text-gray-400 mt-1">Subir</span>
+                              </button>
+                            ))}
+                          </div>
+                          <p className="text-xs text-gray-400 mt-1">Máximo 6 imágenes. Haz clic en una imagen para eliminarla.</p>
+                        </div>
+
                         <div className="flex gap-2 pt-2">
                           <Button
                             size="sm"
