@@ -15,14 +15,19 @@ import Link from 'next/link'
 
 interface Product {
   id: number
-  nameKey: 'productName1' | 'productName2' | 'productName3' | 'productName4' | 'productName5' | 'productName6' | 'productName7' | 'productName8' | 'productName9' | 'productName10' | 'productName11' | 'productName12' | 'productName13' | 'productName14' | 'productName15' | 'productName16' | 'productName17' | 'productName18'
+  nameKey?: string
+  cmsName?: string
+  cmsDescription?: string
   price: number
   image: string
   images?: string[]
-  badgeKey?: 'mostPopular' | 'favorite' | 'limitedEdition' | 'classic' | 'newProduct' | 'trending' | 'popular' | 'exclusive' | 'winterCollection' | 'ballerina' | 'lightyear'
-  descriptionType: 'normal' | 'high' | 'winter' | 'ballerina' | 'lightyear'
+  badgeKey?: string
+  descriptionType: string
   rating: number
   color: string
+  sizes?: string[]
+  stripe_price_id?: string | null
+  fromCMS?: boolean
 }
 
 interface CartItem extends Product {
@@ -49,8 +54,38 @@ function ShopContent() {
   const [isStripeLoading, setIsStripeLoading] = useState(false)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [cmsProducts, setCmsProducts] = useState<Product[]>([])
+  const [cmsLoaded, setCmsLoaded] = useState(false)
 
-  const products: Product[] = [
+  useEffect(() => {
+    fetch('/api/cms')
+      .then(r => r.json())
+      .then(json => {
+        const cmsData = json.products || []
+        const converted: Product[] = cmsData
+          .filter((cp: any) => cp.is_active)
+          .map((cp: any) => ({
+            id: cp.product_id,
+            cmsName: cp.name_es,
+            cmsDescription: cp.description_es,
+            price: cp.price,
+            image: cp.main_image,
+            images: Array.isArray(cp.gallery_images) ? cp.gallery_images : [],
+            badgeKey: cp.badge_key || undefined,
+            descriptionType: cp.description_type || 'normal',
+            rating: cp.rating,
+            color: cp.color || '',
+            sizes: Array.isArray(cp.sizes) ? cp.sizes : [],
+            stripe_price_id: cp.stripe_price_id || null,
+            fromCMS: true,
+          }))
+        setCmsProducts(converted)
+      })
+      .catch(console.error)
+      .finally(() => setCmsLoaded(true))
+  }, [])
+
+  const hardcodedProducts: Product[] = [
     {
       id: 1,
       nameKey: 'productName1',
@@ -348,9 +383,21 @@ function ShopContent() {
     },
   ]
 
-  const getProductName = (product: Product) => t[product.nameKey]
-  const getProductBadge = (product: Product) => product.badgeKey ? t[product.badgeKey] : undefined
+  // Merge hardcoded + CMS products (CMS overrides by id, new ones appended)
+  const products: Product[] = (() => {
+    const merged = [...hardcodedProducts]
+    cmsProducts.forEach(cp => {
+      const idx = merged.findIndex(p => p.id === cp.id)
+      if (idx >= 0) merged[idx] = { ...merged[idx], ...cp }
+      else merged.push(cp)
+    })
+    return merged
+  })()
+
+  const getProductName = (product: Product) => product.cmsName || (product.nameKey ? (t as any)[product.nameKey] : product.color)
+  const getProductBadge = (product: Product) => product.badgeKey ? ((t as any)[product.badgeKey] || product.badgeKey) : undefined
   const getProductDescription = (product: Product) => {
+    if (product.cmsDescription) return product.cmsDescription
     if (product.descriptionType === 'winter') return t.productDescWinter
     if (product.descriptionType === 'ballerina') return t.productDescBallerina
     if (product.descriptionType === 'lightyear') return t.productDescLightyear
@@ -363,6 +410,7 @@ function ShopContent() {
   const availableSizesBallerina = ['13mx', '14mx', '15mx', '16mx', '17mx']
   const availableSizesLightyear = ['13mx', '14mx', '15mx', '16mx', '17mx']
   const getAvailableSizes = (product: Product) => {
+    if (product.sizes && product.sizes.length > 0) return product.sizes
     if (product.descriptionType === 'winter') return availableSizesWinter
     if (product.descriptionType === 'ballerina') return availableSizesBallerina
     if (product.descriptionType === 'lightyear') return availableSizesLightyear
@@ -375,8 +423,9 @@ function ShopContent() {
         if (seasonFilter === 'normal') return p.descriptionType === 'normal'
         if (seasonFilter === 'high') return p.descriptionType === 'high' || p.id === 14
         if (seasonFilter === 'ballerina') return p.descriptionType === 'ballerina'
-        if (seasonFilter === 'multicolor') return p.id === 9
+        if (seasonFilter === 'multicolor') return p.id === 9 || p.descriptionType === 'winter'
         if (seasonFilter === 'lightyear') return p.descriptionType === 'lightyear'
+        if (seasonFilter === 'combat') return p.descriptionType === 'combat'
         return false
       })
     : products
