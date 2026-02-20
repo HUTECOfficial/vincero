@@ -438,26 +438,26 @@ export const updateSiteContent = async (
 // =====================================================
 
 export const uploadCMSImage = async (file: File, folder: string = 'general'): Promise<string | null> => {
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('folder', folder)
 
-  const { data, error } = await supabase.storage
-    .from('cms-images')
-    .upload(fileName, file, {
-      cacheControl: '3600',
-      upsert: false
+    const res = await fetch('/api/cms/upload', {
+      method: 'POST',
+      body: formData,
     })
 
-  if (error) {
+    const json = await res.json()
+    if (!res.ok) {
+      console.error('Error uploading image:', json.error)
+      return null
+    }
+    return json.url
+  } catch (error) {
     console.error('Error uploading image:', error)
     return null
   }
-
-  const { data: urlData } = supabase.storage
-    .from('cms-images')
-    .getPublicUrl(data.path)
-
-  return urlData.publicUrl
 }
 
 export const deleteStorageImage = async (imageUrl: string): Promise<boolean> => {
