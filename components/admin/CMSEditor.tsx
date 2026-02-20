@@ -79,36 +79,19 @@ export default function CMSEditor() {
 
   const loadAllData = async () => {
     setLoading(true)
-    console.log('🔄 CMS: Iniciando carga de datos...')
     try {
-      console.log('📸 CMS: Cargando hero images...')
-      const heroData = await getHeroImages()
-      console.log('✅ CMS: Hero images cargadas:', heroData.length)
-      
-      console.log('📄 CMS: Cargando sections...')
-      const sectionsData = await getCMSSections()
-      console.log('✅ CMS: Sections cargadas:', sectionsData.length)
-      
-      console.log('🛍️ CMS: Cargando products...')
-      const productsData = await getCMSProducts()
-      console.log('✅ CMS: Products cargados:', productsData.length)
-      
-      console.log('💬 CMS: Cargando testimonials...')
-      const testimonialsData = await getCMSTestimonials()
-      console.log('✅ CMS: Testimonials cargados:', testimonialsData.length)
-      
-      setHeroImages(heroData)
-      setSections(sectionsData)
-      setProducts(productsData)
-      setTestimonials(testimonialsData)
-      
-      console.log('✅ CMS: Todos los datos cargados exitosamente')
+      const res = await fetch('/api/cms')
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const json = await res.json()
+      setHeroImages(json.heroImages || [])
+      setSections(json.sections || [])
+      setProducts(json.products || [])
+      setTestimonials(json.testimonials || [])
     } catch (error) {
-      console.error('❌ CMS: Error loading CMS data:', error)
-      showMessage('error', `Error al cargar los datos: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      console.error('❌ CMS load error:', error)
+      showMessage('error', `Error al cargar: ${error instanceof Error ? error.message : 'Error desconocido'}`)
     } finally {
       setLoading(false)
-      console.log('🏁 CMS: Carga finalizada')
     }
   }
 

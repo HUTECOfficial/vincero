@@ -327,172 +327,72 @@ export const deleteCMSImage = async (id: string): Promise<boolean> => {
 }
 
 // =====================================================
-// FUNCIONES DE ESCRITURA (SOLO ADMINS)
+// FUNCIONES DE ESCRITURA — via /api/cms (bypasses RLS)
 // =====================================================
 
-export const updateHeroImage = async (id: string, updates: Partial<HeroImage>): Promise<boolean> => {
-  const { error } = await supabase
-    .from('hero_images')
-    .update(updates)
-    .eq('id', id)
+const cmsWrite = async (action: string, table: string, id?: string, data?: any): Promise<any> => {
+  const res = await fetch('/api/cms', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, table, id, data }),
+  })
+  const json = await res.json()
+  if (!res.ok) throw new Error(json.error || 'CMS write error')
+  return json
+}
 
-  if (error) {
-    console.error('Error updating hero image:', error)
-    return false
-  }
-  return true
+export const updateHeroImage = async (id: string, updates: Partial<HeroImage>): Promise<boolean> => {
+  try { await cmsWrite('update', 'hero_images', id, updates); return true }
+  catch (e) { console.error('Error updating hero image:', e); return false }
 }
 
 export const createHeroImage = async (heroImage: Omit<HeroImage, 'id' | 'created_at' | 'updated_at'>): Promise<HeroImage | null> => {
-  const { data, error } = await supabase
-    .from('hero_images')
-    .insert(heroImage)
-    .select()
-    .single()
-
-  if (error) {
-    console.error('Error creating hero image:', error)
-    return null
-  }
-  return data
+  try { const r = await cmsWrite('insert', 'hero_images', undefined, heroImage); return r.data }
+  catch (e) { console.error('Error creating hero image:', e); return null }
 }
 
 export const deleteHeroImage = async (id: string): Promise<boolean> => {
-  const { error } = await supabase
-    .from('hero_images')
-    .delete()
-    .eq('id', id)
-
-  if (error) {
-    console.error('Error deleting hero image:', error)
-    return false
-  }
-  return true
+  try { await cmsWrite('delete', 'hero_images', id); return true }
+  catch (e) { console.error('Error deleting hero image:', e); return false }
 }
 
 export const updateCMSSection = async (id: string, updates: Partial<CMSSection>): Promise<boolean> => {
-  const { error } = await supabase
-    .from('cms_sections')
-    .update(updates)
-    .eq('id', id)
-
-  if (error) {
-    console.error('Error updating CMS section:', error)
-    return false
-  }
-  return true
+  try { await cmsWrite('update', 'cms_sections', id, updates); return true }
+  catch (e) { console.error('Error updating CMS section:', e); return false }
 }
 
 export const updateCMSProduct = async (id: string, updates: Partial<CMSProduct>): Promise<boolean> => {
-  let { error } = await supabase
-    .from('cms_products')
-    .update(updates)
-    .eq('id', id)
-
-  // If stripe_price_id column doesn't exist, retry without it
-  if (error && error.message?.includes('stripe_price_id')) {
-    const { stripe_price_id, ...safeUpdates } = updates as any
-    const result = await supabase
-      .from('cms_products')
-      .update(safeUpdates)
-      .eq('id', id)
-    error = result.error
-  }
-
-  if (error) {
-    console.error('Error updating CMS product:', JSON.stringify(error))
-    return false
-  }
-  return true
+  try { await cmsWrite('update', 'cms_products', id, updates); return true }
+  catch (e) { console.error('Error updating CMS product:', e); return false }
 }
 
 export const createCMSProduct = async (product: Omit<CMSProduct, 'id' | 'created_at' | 'updated_at'>): Promise<CMSProduct | null> => {
-  // Build insert object without stripe_price_id first (column may not exist yet)
-  const { stripe_price_id, ...baseProduct } = product as any
-  
-  // Use a large random number to avoid UNIQUE conflicts on product_id
   const insertData: any = {
-    ...baseProduct,
+    ...product,
     product_id: Math.floor(Math.random() * 900000) + 100000,
   }
-
-  // Try with stripe_price_id first
-  let { data, error } = await supabase
-    .from('cms_products')
-    .insert({ ...insertData, stripe_price_id: stripe_price_id || null })
-    .select()
-    .single()
-
-  // If it fails (column doesn't exist), retry without stripe_price_id
-  if (error && error.message?.includes('stripe_price_id')) {
-    console.warn('stripe_price_id column not found, retrying without it')
-    const result = await supabase
-      .from('cms_products')
-      .insert(insertData)
-      .select()
-      .single()
-    data = result.data
-    error = result.error
-  }
-
-  if (error) {
-    console.error('Error creating CMS product:', JSON.stringify(error))
-    throw new Error(error.message || JSON.stringify(error))
-  }
-  return data
+  const r = await cmsWrite('insert', 'cms_products', undefined, insertData)
+  return r.data
 }
 
 export const deleteCMSProduct = async (id: string): Promise<boolean> => {
-  const { error } = await supabase
-    .from('cms_products')
-    .delete()
-    .eq('id', id)
-
-  if (error) {
-    console.error('Error deleting CMS product:', error)
-    return false
-  }
-  return true
+  try { await cmsWrite('delete', 'cms_products', id); return true }
+  catch (e) { console.error('Error deleting CMS product:', e); return false }
 }
 
 export const updateCMSTestimonial = async (id: string, updates: Partial<CMSTestimonial>): Promise<boolean> => {
-  const { error } = await supabase
-    .from('cms_testimonials')
-    .update(updates)
-    .eq('id', id)
-
-  if (error) {
-    console.error('Error updating CMS testimonial:', error)
-    return false
-  }
-  return true
+  try { await cmsWrite('update', 'cms_testimonials', id, updates); return true }
+  catch (e) { console.error('Error updating CMS testimonial:', e); return false }
 }
 
 export const createCMSTestimonial = async (testimonial: Omit<CMSTestimonial, 'id' | 'created_at' | 'updated_at'>): Promise<CMSTestimonial | null> => {
-  const { data, error } = await supabase
-    .from('cms_testimonials')
-    .insert(testimonial)
-    .select()
-    .single()
-
-  if (error) {
-    console.error('Error creating CMS testimonial:', error)
-    return null
-  }
-  return data
+  try { const r = await cmsWrite('insert', 'cms_testimonials', undefined, testimonial); return r.data }
+  catch (e) { console.error('Error creating CMS testimonial:', e); return null }
 }
 
 export const deleteCMSTestimonial = async (id: string): Promise<boolean> => {
-  const { error } = await supabase
-    .from('cms_testimonials')
-    .delete()
-    .eq('id', id)
-
-  if (error) {
-    console.error('Error deleting CMS testimonial:', error)
-    return false
-  }
-  return true
+  try { await cmsWrite('delete', 'cms_testimonials', id); return true }
+  catch (e) { console.error('Error deleting CMS testimonial:', e); return false }
 }
 
 export const updateSiteContent = async (
