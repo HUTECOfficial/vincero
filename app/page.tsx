@@ -670,27 +670,32 @@ export default function HomePage() {
     }
   }, [heroApi])
 
-  // Load CMS products from Supabase
+  // Load CMS products via server API (bypasses RLS)
   useEffect(() => {
     const loadCMSProducts = async () => {
       try {
-        const cmsData = await getCMSProducts()
-        if (cmsData && cmsData.length > 0) {
-          const converted: Product[] = cmsData.map(cp => ({
-            id: cp.product_id,
-            cmsName: language === 'es' ? cp.name_es : (cp.name_en || cp.name_es),
-            cmsDescription: language === 'es' ? (cp.description_es || undefined) : (cp.description_en || cp.description_es || undefined),
-            price: cp.price,
-            image: cp.main_image,
-            images: Array.isArray(cp.gallery_images) ? cp.gallery_images as string[] : [],
-            badgeKey: cp.badge_key || undefined,
-            descriptionType: cp.description_type || 'normal',
-            rating: cp.rating,
-            color: cp.color || '',
-            sizes: Array.isArray(cp.sizes) ? cp.sizes as string[] : [],
-            stripe_price_id: cp.stripe_price_id || null,
-            fromCMS: true,
-          }))
+        const res = await fetch('/api/cms')
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const json = await res.json()
+        const cmsData: CMSProduct[] = json.products || []
+        if (cmsData.length > 0) {
+          const converted: Product[] = cmsData
+            .filter(cp => cp.is_active)
+            .map(cp => ({
+              id: cp.product_id,
+              cmsName: language === 'es' ? cp.name_es : (cp.name_en || cp.name_es),
+              cmsDescription: language === 'es' ? (cp.description_es || undefined) : (cp.description_en || cp.description_es || undefined),
+              price: cp.price,
+              image: cp.main_image,
+              images: Array.isArray(cp.gallery_images) ? cp.gallery_images as string[] : [],
+              badgeKey: cp.badge_key || undefined,
+              descriptionType: cp.description_type || 'normal',
+              rating: cp.rating,
+              color: cp.color || '',
+              sizes: Array.isArray(cp.sizes) ? cp.sizes as string[] : [],
+              stripe_price_id: (cp as any).stripe_price_id || null,
+              fromCMS: true,
+            }))
           setCmsProducts(converted)
         }
       } catch (error) {
