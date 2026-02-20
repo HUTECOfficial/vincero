@@ -367,6 +367,7 @@ export default function CMSEditor() {
         badge_key: product.badge_key,
         color: product.color,
         description_type: product.description_type,
+        sizes: product.sizes,
         is_active: product.is_active
       }
       if ((product as any).stripe_price_id !== undefined) {
@@ -1091,6 +1092,45 @@ export default function CMSEditor() {
                             />
                           </div>
                         </div>
+                        {/* Sizes selector */}
+                        <div>
+                          <label className="text-xs text-gray-500 font-semibold block mb-1">Tallas disponibles</label>
+                          {[
+                            { label: 'Infantil', sizes: ['13mx','14mx','15mx','16mx','17mx','18mx'] },
+                            { label: 'Dama', sizes: ['22mx','23mx','24mx','25mx','26mx'] },
+                            { label: 'Caballero', sizes: ['25mx','26mx','27mx','28mx','29mx','30mx'] },
+                          ].map(group => (
+                            <div key={group.label} className="mb-2">
+                              <p className="text-xs text-gray-400 mb-1">{group.label}</p>
+                              <div className="flex flex-wrap gap-1">
+                                {group.sizes.map(size => {
+                                  const current = Array.isArray(product.sizes) ? product.sizes as string[] : []
+                                  const active = current.includes(size)
+                                  return (
+                                    <button
+                                      key={size}
+                                      type="button"
+                                      onClick={() => {
+                                        const updated = active
+                                          ? current.filter(s => s !== size)
+                                          : [...current, size]
+                                        updateProductLocal(product.id, 'sizes', updated)
+                                      }}
+                                      className={`px-2 py-0.5 rounded text-xs border transition-colors ${
+                                        active
+                                          ? 'bg-[#D4AF37] border-[#D4AF37] text-white font-semibold'
+                                          : 'bg-white border-gray-300 text-gray-500 hover:border-[#D4AF37]'
+                                      }`}
+                                    >
+                                      {size}
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
                         <div className="grid grid-cols-2 gap-2">
                           <div>
                             <label className="text-xs text-gray-500">Badge</label>
